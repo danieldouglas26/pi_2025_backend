@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class PlanejamentoController {
     private PlanejamentoService planejamentoService;
     
     @PostMapping("/agendar")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<ItinerarioDTO> agendarItinerario(@RequestBody AgendamentoRequest request) {
         ItinerarioDTO itinerario = planejamentoService.agendarItinerario(
             request.getRotaId(),
@@ -37,6 +39,7 @@ public class PlanejamentoController {
     }
     
     @GetMapping("/cronograma-mensal")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<List<ItinerarioDTO>> getCronogramaMensal(
             @RequestParam Integer mes,
             @RequestParam Integer ano) {
@@ -45,6 +48,7 @@ public class PlanejamentoController {
     }
     
     @GetMapping("/itinerarios-caminhao")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<List<ItinerarioDTO>> getItinerariosPorCaminhao(
             @RequestParam Long caminhaoId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
@@ -54,6 +58,7 @@ public class PlanejamentoController {
     }
     
     @GetMapping("/itinerarios-data")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<List<ItinerarioDTO>> getItinerariosPorData(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data) {
         List<ItinerarioDTO> itinerarios = planejamentoService.consultarItinerariosPorData(data);
@@ -61,6 +66,7 @@ public class PlanejamentoController {
     }
     
     @PutMapping("/{id}/status")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<ItinerarioDTO> atualizarStatusItinerario(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -69,6 +75,7 @@ public class PlanejamentoController {
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'COLETOR')")
     public ResponseEntity<Void> cancelarItinerario(@PathVariable Long id) {
         planejamentoService.cancelarItinerario(id);
         return ResponseEntity.noContent().build();
