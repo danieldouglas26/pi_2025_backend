@@ -15,11 +15,9 @@ public class RuaResponseDTO {
     private String destinoNome;
     private Double distancia;
 
-    // Construtor padrão (no-args)
     public RuaResponseDTO() {
     }
 
-    // Construtor com todos os campos
     public RuaResponseDTO(Long id, Long origemId, String origemNome, Long destinoId, 
                          String destinoNome, Double distancia) {
         this.id = id;
@@ -30,18 +28,15 @@ public class RuaResponseDTO {
         this.distancia = distancia;
     }
 
-    // Construtor simplificado (sem ID)
     public RuaResponseDTO(Long origemId, String origemNome, Long destinoId, 
                          String destinoNome, Double distancia) {
         this(null, origemId, origemNome, destinoId, destinoNome, distancia);
     }
 
-    // Construtor apenas com IDs e distância
     public RuaResponseDTO(Long origemId, Long destinoId, Double distancia) {
         this(null, origemId, null, destinoId, null, distancia);
     }
 
-    // Construtor reverso (para direção oposta)
     public RuaResponseDTO criarReverso() {
         return new RuaResponseDTO(
             this.id, 
@@ -53,7 +48,6 @@ public class RuaResponseDTO {
         );
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }

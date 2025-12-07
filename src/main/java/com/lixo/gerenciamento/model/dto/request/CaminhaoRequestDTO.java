@@ -2,13 +2,9 @@ package com.lixo.gerenciamento.model.dto.request;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.dto.response.CaminhaoResponseDTO;
-import com.lixo.gerenciamento.model.entity.Caminhao;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
-import io.jsonwebtoken.lang.Arrays;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -167,44 +163,6 @@ public class CaminhaoRequestDTO {
         return tipos.stream().anyMatch(this::aceitaTipoResiduo);
     }
 
-    public static CaminhaoRequestDTO of(String placa, String nomeMotorista, Double capacidade, 
-                                       List<TipoResiduo> tipoResiduos) {
-        return new CaminhaoRequestDTO(placa, nomeMotorista, capacidade, tipoResiduos);
-    }
-
-    public static CaminhaoRequestDTO of(String placa, String nomeMotorista, Double capacidade) {
-        return new CaminhaoRequestDTO(placa, nomeMotorista, capacidade);
-    }
-
-    public static CaminhaoRequestDTO fromEntity(Caminhao caminhao) {
-        if (caminhao == null) {
-            return null;
-        }
-        
-        return new CaminhaoRequestDTO(
-            caminhao.getPlaca(),
-            caminhao.getNomeMotorista(),
-            caminhao.getCapacidade(),
-            caminhao.getTipoResiduos() != null ? new ArrayList<>(caminhao.getTipoResiduos()) : new ArrayList<>()
-        );
-    }
-
-    public static CaminhaoRequestDTO fromResponseDTO(CaminhaoResponseDTO responseDTO) {
-        if (responseDTO == null) {
-            return null;
-        }
-        
-        CaminhaoRequestDTO requestDTO = new CaminhaoRequestDTO();
-        requestDTO.setPlaca(responseDTO.getPlaca());
-        requestDTO.setNomeMotorista(responseDTO.getNomeMotorista());
-        requestDTO.setCapacidade(responseDTO.getCapacidade());
-        if (responseDTO.getTipoResiduos() != null) {
-            requestDTO.setTipoResiduos(new ArrayList<>(responseDTO.getTipoResiduos()));
-        }
-        
-        return requestDTO;
-    }
-
     public static CaminhaoRequestDTOBuilder builder() {
         return new CaminhaoRequestDTOBuilder();
     }
@@ -231,21 +189,6 @@ public class CaminhaoRequestDTO {
 
         public CaminhaoRequestDTOBuilder capacidade(Double capacidade) {
             this.capacidade = capacidade;
-            return this;
-        }
-
-        public CaminhaoRequestDTOBuilder tipoResiduos(List<TipoResiduo> tipoResiduos) {
-            this.tipoResiduos = tipoResiduos != null ? tipoResiduos : new ArrayList<>();
-            return this;
-        }
-
-        public CaminhaoRequestDTOBuilder tipoResiduo(TipoResiduo tipoResiduo) {
-            if (this.tipoResiduos == null) {
-                this.tipoResiduos = new ArrayList<>();
-            }
-            if (tipoResiduo != null) {
-                this.tipoResiduos.add(tipoResiduo);
-            }
             return this;
         }
 

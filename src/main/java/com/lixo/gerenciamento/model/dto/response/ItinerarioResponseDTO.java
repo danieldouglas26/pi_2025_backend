@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.lixo.gerenciamento.model.entity.Itinerario;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class ItinerarioResponseDTO {
@@ -360,31 +359,5 @@ public class ItinerarioResponseDTO {
                                            motorista, data, distanciaTotal, tipoResiduo, 
                                            concluido, paradas);
         }
-    }
-
-    public static ItinerarioResponseDTO fromEntity(Itinerario itinerario) {
-        if (itinerario == null) {
-            return null;
-        }
-        
-        ItinerarioResponseDTO dto = new ItinerarioResponseDTO();
-        dto.setId(itinerario.getId());
-        dto.setData(itinerario.getData());
-        dto.setConcluido(false);
-        
-        if (itinerario.getRota() != null) {
-            dto.setRotaId(itinerario.getRota().getId());
-            dto.setRotaNome(itinerario.getRota().getNome());
-            dto.setDistanciaTotal(itinerario.getRota().getDistanciaTotalKm());
-            dto.setTipoResiduo(itinerario.getRota().getTiposResiduos());
-        }
-        
-        if (itinerario.getCaminhao() != null) {
-            dto.setCaminhaoId(itinerario.getCaminhao().getId());
-            dto.setCaminhaoPlaca(itinerario.getCaminhao().getPlaca());
-            dto.setMotorista(itinerario.getCaminhao().getNomeMotorista());
-        }
-        
-        return dto;
     }
 }

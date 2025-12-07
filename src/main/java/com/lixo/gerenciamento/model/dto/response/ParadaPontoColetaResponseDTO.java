@@ -1,11 +1,8 @@
 package com.lixo.gerenciamento.model.dto.response;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.entity.ParadaPontoColeta;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class ParadaPontoColetaResponseDTO {
@@ -246,33 +243,4 @@ public class ParadaPontoColetaResponseDTO {
         }
     }
 
-    public static ParadaPontoColetaResponseDTO fromEntity(ParadaPontoColeta paradaPontoColeta) {
-        if (paradaPontoColeta == null) {
-            return null;
-        }
-        
-        ParadaPontoColetaResponseDTO dto = new ParadaPontoColetaResponseDTO();
-        dto.setId(paradaPontoColeta.getId());
-        dto.setColetado(paradaPontoColeta.isColetado());
-        
-        if (paradaPontoColeta.getPontoColeta() != null) {
-            dto.setPontoColetaId(paradaPontoColeta.getPontoColeta().getId());
-            dto.setPontoColetaNome(paradaPontoColeta.getPontoColeta().getNome());
-            
-            if (paradaPontoColeta.getPontoColeta().getTiposDeResiduo() != null) {
-                dto.setTiposResiduo(new ArrayList<>(paradaPontoColeta.getPontoColeta().getTiposDeResiduo()));
-            }
-        }
-        
-        return dto;
-    }
-
-    public static List<ParadaPontoColetaResponseDTO> fromEntities(List<ParadaPontoColeta> paradasPontoColeta) {
-        if (paradasPontoColeta == null) {
-            return Collections.emptyList();
-        }
-        return paradasPontoColeta.stream()
-                .map(ParadaPontoColetaResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
 }

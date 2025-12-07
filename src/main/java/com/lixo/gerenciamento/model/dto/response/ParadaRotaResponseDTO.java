@@ -1,13 +1,10 @@
 package com.lixo.gerenciamento.model.dto.response;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.entity.ParadaRota;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class ParadaRotaResponseDTO {
@@ -221,7 +218,6 @@ public class ParadaRotaResponseDTO {
         }
 
         public ParadaRotaResponseDTO build() {
-            // Validações básicas
             if (ordem < 0) {
                 throw new IllegalArgumentException("Ordem não pode ser negativa");
             }
@@ -234,37 +230,6 @@ public class ParadaRotaResponseDTO {
             
             return new ParadaRotaResponseDTO(ordem, bairroId, bairroNome, pontosColeta);
         }
-    }
-
-    public static ParadaRotaResponseDTO fromEntity(ParadaRota paradaRota) {
-        if (paradaRota == null) {
-            return null;
-        }
-        
-        ParadaRotaResponseDTO dto = new ParadaRotaResponseDTO();
-        dto.setOrdem(paradaRota.getOrdem());
-        
-        if (paradaRota.getBairro() != null) {
-            dto.setBairroId(paradaRota.getBairro().getId());
-            dto.setBairroNome(paradaRota.getBairro().getNome());
-        }
-        
-        // Converter pontos de coleta se existirem
-        if (paradaRota.getParadasPontoColeta() != null && !paradaRota.getParadasPontoColeta().isEmpty()) {
-            List<ParadaPontoColetaResponseDTO> pontosDTO = ParadaPontoColetaResponseDTO.fromEntities(paradaRota.getParadasPontoColeta());
-            dto.setPontosColeta(pontosDTO);
-        }
-        
-        return dto;
-    }
-
-    public static List<ParadaRotaResponseDTO> fromEntities(List<ParadaRota> paradasRota) {
-        if (paradasRota == null) {
-            return Collections.emptyList();
-        }
-        return paradasRota.stream()
-                .map(ParadaRotaResponseDTO::fromEntity)
-                .collect(Collectors.toList());
     }
 
 }

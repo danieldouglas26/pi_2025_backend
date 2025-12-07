@@ -1,13 +1,10 @@
 package com.lixo.gerenciamento.model.dto.response;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.entity.Rota;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class RotaResponseDTO {
@@ -20,13 +17,11 @@ public class RotaResponseDTO {
     private List<ParadaRotaResponseDTO> paradas;
     private List<ParadaPontoColetaResponseDTO> pontosColeta;
 
-    // Construtor padrão (no-args)
     public RotaResponseDTO() {
         this.paradas = new ArrayList<>();
         this.pontosColeta = new ArrayList<>();
     }
 
-    // Construtor com todos os campos
     public RotaResponseDTO(Long id, String nome, Long caminhaoId, String caminhaoPlaca,
                           Double distanciaTotalKm, TipoResiduo tiposResiduos,
                           List<ParadaRotaResponseDTO> paradas, 
@@ -41,19 +36,16 @@ public class RotaResponseDTO {
         this.pontosColeta = pontosColeta != null ? pontosColeta : new ArrayList<>();
     }
 
-    // Construtor simplificado (sem listas)
     public RotaResponseDTO(Long id, String nome, Long caminhaoId, String caminhaoPlaca,
                           Double distanciaTotalKm, TipoResiduo tiposResiduos) {
         this(id, nome, caminhaoId, caminhaoPlaca, distanciaTotalKm, tiposResiduos, 
              new ArrayList<>(), new ArrayList<>());
     }
 
-    // Construtor básico (apenas informações principais)
     public RotaResponseDTO(Long id, String nome, Double distanciaTotalKm, TipoResiduo tiposResiduos) {
         this(id, nome, null, null, distanciaTotalKm, tiposResiduos, new ArrayList<>(), new ArrayList<>());
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -124,7 +116,6 @@ public class RotaResponseDTO {
         this.pontosColeta = pontosColeta != null ? pontosColeta : new ArrayList<>();
     }
 
-    // Métodos equals e hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -155,7 +146,6 @@ public class RotaResponseDTO {
         return result;
     }
 
-    // Método toString
     @Override
     public String toString() {
         return "RotaResponseDTO{" +
@@ -170,7 +160,6 @@ public class RotaResponseDTO {
                 '}';
     }
 
-    // Métodos utilitários
     public void addParada(ParadaRotaResponseDTO parada) {
         if (parada != null) {
             getParadas().add(parada);
@@ -274,7 +263,6 @@ public class RotaResponseDTO {
             tipos.add(tiposResiduos);
         }
         
-        // Adicionar tipos de resíduo dos pontos de coleta
         if (hasPontosColeta()) {
             for (ParadaPontoColetaResponseDTO ponto : pontosColeta) {
                 if (ponto.getTiposResiduo() != null) {
@@ -286,7 +274,6 @@ public class RotaResponseDTO {
         return new ArrayList<>(tipos);
     }
 
-    // Builder Pattern
     public static RotaResponseDTOBuilder builder() {
         return new RotaResponseDTOBuilder();
     }
@@ -373,7 +360,6 @@ public class RotaResponseDTO {
         }
 
         public RotaResponseDTO build() {
-            // Validações básicas
             if (nome == null || nome.trim().isEmpty()) {
                 throw new IllegalArgumentException("Nome da rota não pode ser nulo ou vazio");
             }
@@ -387,7 +373,6 @@ public class RotaResponseDTO {
                 throw new IllegalArgumentException("Tipo de resíduo não pode ser nulo");
             }
             
-            // Se tem caminhão associado, verificar se placa foi informada
             if (caminhaoId != null && (caminhaoPlaca == null || caminhaoPlaca.trim().isEmpty())) {
                 throw new IllegalArgumentException("Se caminhão está associado, a placa deve ser informada");
             }
@@ -397,54 +382,4 @@ public class RotaResponseDTO {
         }
     }
 
-    // Métodos de fábrica (Factory Methods)
-    public static RotaResponseDTO fromEntity(Rota rota) {
-        if (rota == null) {
-            return null;
-        }
-        
-        RotaResponseDTO dto = new RotaResponseDTO();
-        dto.setId(rota.getId());
-        dto.setNome(rota.getNome());
-        dto.setDistanciaTotalKm(rota.getDistanciaTotalKm());
-        dto.setTiposResiduos(rota.getTiposResiduos());
-        
-        if (rota.getCaminhao() != null) {
-            dto.setCaminhaoId(rota.getCaminhao().getId());
-            dto.setCaminhaoPlaca(rota.getCaminhao().getPlaca());
-        }
-        
-        // Converter paradas se existirem
-        if (rota.getParadas() != null && !rota.getParadas().isEmpty()) {
-            List<ParadaRotaResponseDTO> paradasDTO = ParadaRotaResponseDTO.fromEntities(rota.getParadas());
-            dto.setParadas(paradasDTO);
-        }
-        
-        return dto;
-    }
-
-    public static List<RotaResponseDTO> fromEntities(List<Rota> rotas) {
-        if (rotas == null) {
-            return Collections.emptyList();
-        }
-        return rotas.stream()
-                .map(RotaResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public static RotaResponseDTO fromItinerarioDTO(ItinerarioResponseDTO itinerarioDTO) {
-        if (itinerarioDTO == null) {
-            return null;
-        }
-        
-        RotaResponseDTO dto = new RotaResponseDTO();
-        dto.setId(itinerarioDTO.getRotaId());
-        dto.setNome(itinerarioDTO.getRotaNome());
-        dto.setDistanciaTotalKm(itinerarioDTO.getDistanciaTotal());
-        dto.setTiposResiduos(itinerarioDTO.getTipoResiduo());
-        dto.setCaminhaoId(itinerarioDTO.getCaminhaoId());
-        dto.setCaminhaoPlaca(itinerarioDTO.getCaminhaoPlaca());
-        
-        return dto;
-    }
 }

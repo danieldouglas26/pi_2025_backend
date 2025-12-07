@@ -43,12 +43,4 @@ public class BairroRequestDTO {
                 '}';
     }
 
-    public boolean isValid() {
-        return nome != null && !nome.trim().isEmpty();
-    }
-
-    public static BairroRequestDTO of(String nome) {
-        return new BairroRequestDTO(nome);
-    }
-
 }

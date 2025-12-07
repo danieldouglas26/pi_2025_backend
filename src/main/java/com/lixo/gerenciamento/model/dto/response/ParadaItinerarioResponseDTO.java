@@ -3,9 +3,6 @@ package com.lixo.gerenciamento.model.dto.response;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import com.lixo.gerenciamento.model.entity.ParadaRota;
 
 public class ParadaItinerarioResponseDTO {
     private int ordem;
@@ -15,11 +12,10 @@ public class ParadaItinerarioResponseDTO {
     private boolean coletado;
     private LocalDateTime horaColeta;
 
-    // Construtor padrão (no-args)
     public ParadaItinerarioResponseDTO() {
         this.pontosColeta = new ArrayList<>();
-        this.coletado = false; // Valor padrão
-        this.ordem = 0; // Valor padrão
+        this.coletado = false; 
+        this.ordem = 0;
     }
 
     public ParadaItinerarioResponseDTO(int ordem, Long bairroId, String bairroNome, 
@@ -33,18 +29,15 @@ public class ParadaItinerarioResponseDTO {
         this.horaColeta = horaColeta;
     }
 
-    // Construtor simplificado (sem lista de pontos de coleta)
     public ParadaItinerarioResponseDTO(int ordem, Long bairroId, String bairroNome, 
                                       boolean coletado, LocalDateTime horaColeta) {
         this(ordem, bairroId, bairroNome, new ArrayList<>(), coletado, horaColeta);
     }
 
-    // Construtor básico (apenas com dados do bairro e ordem)
     public ParadaItinerarioResponseDTO(int ordem, Long bairroId, String bairroNome) {
         this(ordem, bairroId, bairroNome, new ArrayList<>(), false, null);
     }
 
-    // Getters e Setters
     public int getOrdem() {
         return ordem;
     }
@@ -127,7 +120,6 @@ public class ParadaItinerarioResponseDTO {
         return result;
     }
 
-    // Método toString
     @Override
     public String toString() {
         return "ParadaItinerarioResponseDTO{" +
@@ -140,7 +132,6 @@ public class ParadaItinerarioResponseDTO {
                 '}';
     }
 
-    // Métodos utilitários
     public void addPontoColeta(PontoColetaResponseDTO pontoColeta) {
         if (pontoColeta != null) {
             getPontosColeta().add(pontoColeta);
@@ -267,7 +258,6 @@ public class ParadaItinerarioResponseDTO {
         }
 
         public ParadaItinerarioResponseDTO build() {
-            // Validações básicas
             if (ordem < 0) {
                 throw new IllegalArgumentException("Ordem não pode ser negativa");
             }
@@ -278,12 +268,10 @@ public class ParadaItinerarioResponseDTO {
                 throw new IllegalArgumentException("Nome do bairro não pode ser nulo ou vazio");
             }
             
-            // Validação de consistência: se está coletado, deve ter hora de coleta
             if (coletado && horaColeta == null) {
                 horaColeta = LocalDateTime.now();
             }
             
-            // Se não está coletado, não deve ter hora de coleta
             if (!coletado && horaColeta != null) {
                 throw new IllegalArgumentException("Parada não coletada não pode ter hora de coleta");
             }
@@ -291,39 +279,5 @@ public class ParadaItinerarioResponseDTO {
             return new ParadaItinerarioResponseDTO(ordem, bairroId, bairroNome, 
                                                   pontosColeta, coletado, horaColeta);
         }
-    }
-
-    public static ParadaItinerarioResponseDTO fromParadaRota(ParadaRota paradaRota) {
-        if (paradaRota == null) {
-            return null;
-        }
-        
-        ParadaItinerarioResponseDTO dto = new ParadaItinerarioResponseDTO();
-        dto.setOrdem(paradaRota.getOrdem());
-        dto.setColetado(paradaRota.isColetado());
-        dto.setHoraColeta(paradaRota.getHoraColeta());
-        
-        if (paradaRota.getBairro() != null) {
-            dto.setBairroId(paradaRota.getBairro().getId());
-            dto.setBairroNome(paradaRota.getBairro().getNome());
-        }
-        
-        // Converter pontos de coleta se existirem
-        if (paradaRota.getParadasPontoColeta() != null) {
-            List<PontoColetaResponseDTO> pontosDTO = paradaRota.getParadasPontoColeta().stream()
-                    .map(paradaPonto -> {
-                        PontoColetaResponseDTO pontoDTO = new PontoColetaResponseDTO();
-                        if (paradaPonto.getPontoColeta() != null) {
-                            pontoDTO.setId(paradaPonto.getPontoColeta().getId());
-                            pontoDTO.setNome(paradaPonto.getPontoColeta().getNome());
-                        }
-                        pontoDTO.setColetado(paradaPonto.isColetado());
-                        return pontoDTO;
-                    })
-                    .collect(Collectors.toList());
-            dto.setPontosColeta(pontosDTO);
-        }
-        
-        return dto;
     }
 }

@@ -49,12 +49,10 @@ public class ParadaRota {
     @OneToMany(mappedBy = "paradaRota", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ParadaPontoColeta> paradasPontoColeta;
 
-    // Construtor padrão (no-args)
     public ParadaRota() {
         this.paradasPontoColeta = new ArrayList<>();
     }
 
-    // Construtor com todos os campos
     public ParadaRota(Long id, Rota rota, Bairro bairro, int ordem, boolean coletado, 
                       LocalDateTime horaColeta, String observacao, List<ParadaPontoColeta> paradasPontoColeta) {
         this.id = id;
@@ -67,7 +65,6 @@ public class ParadaRota {
         this.paradasPontoColeta = paradasPontoColeta != null ? paradasPontoColeta : new ArrayList<>();
     }
 
-    // Construtor privado para o Builder
     private ParadaRota(ParadaRotaBuilder builder) {
         this.id = builder.id;
         this.rota = builder.rota;
@@ -79,7 +76,6 @@ public class ParadaRota {
         this.paradasPontoColeta = builder.paradasPontoColeta != null ? builder.paradasPontoColeta : new ArrayList<>();
     }
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -147,7 +143,6 @@ public class ParadaRota {
         this.paradasPontoColeta = paradasPontoColeta != null ? paradasPontoColeta : new ArrayList<>();
     }
 
-    // Métodos de negócio
     public void adicionarPontoColeta(PontoColeta pontoColeta, boolean coletado) {
         ParadaPontoColeta paradaPonto = new ParadaPontoColeta();
         paradaPonto.setParadaRota(this);
@@ -166,7 +161,6 @@ public class ParadaRota {
         this.horaColeta = LocalDateTime.now();
     }
 
-    // Método para adicionar parada ponto coleta
     public void addParadaPontoColeta(ParadaPontoColeta paradaPontoColeta) {
         if (paradasPontoColeta == null) {
             paradasPontoColeta = new ArrayList<>();
@@ -175,7 +169,6 @@ public class ParadaRota {
         paradasPontoColeta.add(paradaPontoColeta);
     }
 
-    // Método para remover parada ponto coleta
     public void removeParadaPontoColeta(ParadaPontoColeta paradaPontoColeta) {
         if (paradasPontoColeta != null) {
             paradasPontoColeta.remove(paradaPontoColeta);
@@ -183,7 +176,6 @@ public class ParadaRota {
         }
     }
 
-    // Métodos equals e hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -205,7 +197,6 @@ public class ParadaRota {
         return result;
     }
 
-    // Método toString
     @Override
     public String toString() {
         return "ParadaRota{" +
@@ -235,7 +226,6 @@ public class ParadaRota {
         private List<ParadaPontoColeta> paradasPontoColeta;
         
         public ParadaRotaBuilder() {
-            // Construtor padrão
         }
         
         public ParadaRotaBuilder id(Long id) {
@@ -299,7 +289,6 @@ public class ParadaRota {
         
         @Override
         public ParadaRota build() {
-            // Validações
             if (rota == null) {
                 throw new IllegalArgumentException("Rota não pode ser nula");
             }
@@ -310,17 +299,14 @@ public class ParadaRota {
                 throw new IllegalArgumentException("Ordem não pode ser negativa");
             }
             
-            // Se estiver marcado como coletado, deve ter hora de coleta
             if (coletado && horaColeta == null) {
                 horaColeta = LocalDateTime.now();
             }
             
-            // Se não estiver coletado, não deve ter hora de coleta
             if (!coletado && horaColeta != null) {
                 throw new IllegalArgumentException("Parada não coletada não pode ter hora de coleta");
             }
             
-            // Configurar a referência bidirecional nas paradas ponto coleta
             if (paradasPontoColeta != null) {
                 for (ParadaPontoColeta paradaPonto : paradasPontoColeta) {
                     paradaPonto.setParadaRota(new ParadaRota(this)); // Referência temporária

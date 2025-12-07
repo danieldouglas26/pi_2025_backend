@@ -19,11 +19,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private String secret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
-    @Value("${jwt.expiration}")
-    private long expiration;
+    private long expiration = 86400000;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

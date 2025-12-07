@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.dto.response.PontoColetaResponseDTO;
-import com.lixo.gerenciamento.model.entity.PontoColeta;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 import jakarta.validation.constraints.Email;
@@ -65,7 +63,6 @@ public class PontoColetaRequestDTO {
         this.tiposDeResiduo = tiposDeResiduo != null ? tiposDeResiduo : new ArrayList<>();
     }
 
-    // Construtor simplificado (sem horário de funcionamento)
     public PontoColetaRequestDTO(String nome, Long idBairro, String nomeResponsavel,
                                 String email, String telefone, String endereco,
                                 List<String> tiposDeResiduo) {
@@ -140,7 +137,6 @@ public class PontoColetaRequestDTO {
         this.tiposDeResiduo = tiposDeResiduo != null ? tiposDeResiduo : new ArrayList<>();
     }
 
-    // Métodos equals e hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -171,7 +167,6 @@ public class PontoColetaRequestDTO {
         return result;
     }
 
-    // Método toString (sem informações sensíveis completas)
     @Override
     public String toString() {
         return "PontoColetaRequestDTO{" +
@@ -186,7 +181,6 @@ public class PontoColetaRequestDTO {
                 '}';
     }
 
-    // Métodos utilitários
     public void addTipoResiduo(String tipoResiduo) {
         if (tipoResiduo != null && !tipoResiduo.trim().isEmpty()) {
             getTiposDeResiduo().add(tipoResiduo.trim());
@@ -237,7 +231,7 @@ public class PontoColetaRequestDTO {
         if (nome == null) {
             return "";
         }
-        // Capitaliza a primeira letra de cada palavra
+
         return Arrays.stream(nome.trim().split("\\s+"))
                 .map(palavra -> palavra.length() > 0 ? 
                     Character.toUpperCase(palavra.charAt(0)) + palavra.substring(1).toLowerCase() : "")
@@ -298,73 +292,16 @@ public class PontoColetaRequestDTO {
         return tipos.stream().anyMatch(this::aceitaTipoResiduo);
     }
 
-    // Métodos auxiliares de validação
     private boolean isValidEmail(String email) {
         String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
         return email != null && email.matches(emailRegex);
     }
 
     private boolean isValidTelefone(String telefone) {
-        // Remove todos os não-dígitos e verifica se tem pelo menos 10 dígitos
         String digitos = telefone.replaceAll("[^\\d]", "");
         return digitos.length() >= 10;
     }
 
-    // Métodos de fábrica
-    public static PontoColetaRequestDTO of(String nome, Long idBairro, String nomeResponsavel,
-                                          String email, String telefone, String endereco,
-                                          String horarioFuncionamento, List<String> tiposDeResiduo) {
-        return new PontoColetaRequestDTO(nome, idBairro, nomeResponsavel, email, telefone, 
-                                       endereco, horarioFuncionamento, tiposDeResiduo);
-    }
-
-    public static PontoColetaRequestDTO fromEntity(PontoColeta pontoColeta) {
-        if (pontoColeta == null) {
-            return null;
-        }
-        
-        PontoColetaRequestDTO dto = new PontoColetaRequestDTO();
-        dto.setNome(pontoColeta.getNome());
-        dto.setNomeResponsavel(pontoColeta.getNomeResponsavel());
-        dto.setEmail(pontoColeta.getEmail());
-        dto.setTelefone(pontoColeta.getTelefone());
-        dto.setEndereco(pontoColeta.getEndereco());
-        dto.setHorarioFuncionamento(pontoColeta.getHorarioFuncionamento());
-        
-        if (pontoColeta.getBairro() != null) {
-            dto.setIdBairro(pontoColeta.getBairro().getId());
-        }
-        
-        // Converter tipos de resíduo do enum para strings
-        if (pontoColeta.getTiposDeResiduo() != null) {
-            List<String> tiposString = pontoColeta.getTiposDeResiduo().stream()
-                    .map(Enum::name)
-                    .collect(Collectors.toList());
-            dto.setTiposDeResiduo(tiposString);
-        }
-        
-        return dto;
-    }
-
-    public static PontoColetaRequestDTO fromResponseDTO(PontoColetaResponseDTO responseDTO) {
-        if (responseDTO == null) {
-            return null;
-        }
-        
-        PontoColetaRequestDTO dto = new PontoColetaRequestDTO();
-        dto.setNome(responseDTO.getNome());
-        dto.setEndereco(responseDTO.getEndereco());
-        dto.setHorarioFuncionamento(responseDTO.getHorarioFuncionamento());
-        dto.setIdBairro(responseDTO.getIdBairro());
-        
-        if (responseDTO.getTiposResiduo() != null) {
-            dto.setTiposDeResiduo(new ArrayList<>(responseDTO.getTiposResiduo()));
-        }
-        
-        return dto;
-    }
-
-    // Builder Pattern (opcional)
     public static PontoColetaRequestDTOBuilder builder() {
         return new PontoColetaRequestDTOBuilder();
     }
@@ -441,7 +378,6 @@ public class PontoColetaRequestDTO {
         }
 
         public PontoColetaRequestDTO build() {
-            // Validações básicas
             if (nome == null || nome.trim().isEmpty()) {
                 throw new IllegalArgumentException("Nome do ponto de coleta não pode ser nulo ou vazio");
             }

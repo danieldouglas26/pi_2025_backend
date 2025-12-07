@@ -4,9 +4,6 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import com.lixo.gerenciamento.model.dto.response.ItinerarioResponseDTO;
-import com.lixo.gerenciamento.model.entity.Itinerario;
-
 import jakarta.validation.constraints.NotNull;
 
 public class ItinerarioRequestDTO {
@@ -163,30 +160,6 @@ public class ItinerarioRequestDTO {
         return new ItinerarioRequestDTO(rotaId, caminhaoId);
     }
 
-    public static ItinerarioRequestDTO fromEntity(Itinerario itinerario) {
-        if (itinerario == null) {
-            return null;
-        }
-        
-        return new ItinerarioRequestDTO(
-            itinerario.getRota() != null ? itinerario.getRota().getId() : null,
-            itinerario.getCaminhao() != null ? itinerario.getCaminhao().getId() : null,
-            itinerario.getData()
-        );
-    }
-
-    public static ItinerarioRequestDTO fromResponseDTO(ItinerarioResponseDTO responseDTO) {
-        if (responseDTO == null) {
-            return null;
-        }
-        
-        ItinerarioRequestDTO requestDTO = new ItinerarioRequestDTO();
-        requestDTO.setRotaId(responseDTO.getRotaId());
-        requestDTO.setCaminhaoId(responseDTO.getCaminhaoId());
-        requestDTO.setData(responseDTO.getData());
-        
-        return requestDTO;
-    }
 
     public static ItinerarioRequestDTOBuilder builder() {
         return new ItinerarioRequestDTOBuilder();

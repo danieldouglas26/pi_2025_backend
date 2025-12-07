@@ -1,11 +1,5 @@
 package com.lixo.gerenciamento.model.dto.response;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.lixo.gerenciamento.model.entity.Bairro;
-
 public class BairroResponseDTO {
     private Long id;
     private String nome;
@@ -91,27 +85,6 @@ public class BairroResponseDTO {
         }
     }
 
-    public static BairroResponseDTO of(Long id, String nome) {
-        return new BairroResponseDTO(id, nome);
-    }
 
-    public static BairroResponseDTO of(String nome) {
-        return new BairroResponseDTO(nome);
-    }
 
-    public static BairroResponseDTO fromEntity(Bairro bairro) {
-        if (bairro == null) {
-            return null;
-        }
-        return new BairroResponseDTO(bairro.getId(), bairro.getNome());
-    }
-
-    public static List<BairroResponseDTO> fromEntities(List<Bairro> bairros) {
-        if (bairros == null) {
-            return Collections.emptyList();
-        }
-        return bairros.stream()
-                .map(BairroResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
 }

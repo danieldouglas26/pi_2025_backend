@@ -1,14 +1,11 @@
 package com.lixo.gerenciamento.model.dto.request;
 
-import com.lixo.gerenciamento.model.dto.response.ParadaPontoColetaResponseDTO;
-import com.lixo.gerenciamento.model.entity.ParadaPontoColeta;
-
 public class ParadaPontoColetaRequestDTO {
     private Long pontoColetaId;
     private boolean coletado;
 
     public ParadaPontoColetaRequestDTO() {
-        this.coletado = false; // Valor padrão
+        this.coletado = false;
     }
 
     public ParadaPontoColetaRequestDTO(Long pontoColetaId, boolean coletado) {
@@ -67,7 +64,6 @@ public class ParadaPontoColetaRequestDTO {
                 '}';
     }
 
-    // Métodos utilitários
     public boolean isValid() {
         return pontoColetaId != null;
     }
@@ -96,43 +92,12 @@ public class ParadaPontoColetaRequestDTO {
         this.coletado = !this.coletado;
     }
 
-    // Métodos de fábrica
-    public static ParadaPontoColetaRequestDTO of(Long pontoColetaId, boolean coletado) {
-        return new ParadaPontoColetaRequestDTO(pontoColetaId, coletado);
-    }
-
-    public static ParadaPontoColetaRequestDTO of(Long pontoColetaId) {
-        return new ParadaPontoColetaRequestDTO(pontoColetaId);
-    }
-
     public static ParadaPontoColetaRequestDTO coletado(Long pontoColetaId) {
         return new ParadaPontoColetaRequestDTO(pontoColetaId, true);
     }
 
     public static ParadaPontoColetaRequestDTO pendente(Long pontoColetaId) {
         return new ParadaPontoColetaRequestDTO(pontoColetaId, false);
-    }
-
-    public static ParadaPontoColetaRequestDTO fromEntity(ParadaPontoColeta paradaPontoColeta) {
-        if (paradaPontoColeta == null) {
-            return null;
-        }
-        
-        return new ParadaPontoColetaRequestDTO(
-            paradaPontoColeta.getPontoColeta() != null ? paradaPontoColeta.getPontoColeta().getId() : null,
-            paradaPontoColeta.isColetado()
-        );
-    }
-
-    public static ParadaPontoColetaRequestDTO fromResponseDTO(ParadaPontoColetaResponseDTO responseDTO) {
-        if (responseDTO == null) {
-            return null;
-        }
-        
-        return new ParadaPontoColetaRequestDTO(
-            responseDTO.getPontoColetaId(),
-            responseDTO.isColetado()
-        );
     }
 
     public static ParadaPontoColetaRequestDTOBuilder builder() {

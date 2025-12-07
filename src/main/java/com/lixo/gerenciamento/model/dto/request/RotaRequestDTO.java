@@ -191,20 +191,6 @@ public class RotaRequestDTO {
                 (origemId.equals(bairro2Id) && destinoId.equals(bairro1Id)));
     }
 
-    public static RotaRequestDTO of(Long caminhaoId, Long origemId, Long destinoId, 
-                                   TipoResiduo tipoResiduo, String nome) {
-        return new RotaRequestDTO(caminhaoId, origemId, destinoId, tipoResiduo, nome);
-    }
-
-    public static RotaRequestDTO of(Long caminhaoId, Long origemId, Long destinoId, 
-                                   TipoResiduo tipoResiduo) {
-        return new RotaRequestDTO(caminhaoId, origemId, destinoId, tipoResiduo);
-    }
-
-
-
-
-
     public static RotaRequestDTOBuilder builder() {
         return new RotaRequestDTOBuilder();
     }

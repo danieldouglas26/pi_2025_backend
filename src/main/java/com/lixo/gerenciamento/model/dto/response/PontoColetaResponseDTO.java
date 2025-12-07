@@ -1,12 +1,8 @@
 package com.lixo.gerenciamento.model.dto.response;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.entity.PontoColeta;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class PontoColetaResponseDTO {
@@ -385,61 +381,4 @@ public class PontoColetaResponseDTO {
         }
     }
 
-    public static PontoColetaResponseDTO fromEntity(PontoColeta pontoColeta) {
-        if (pontoColeta == null) {
-            return null;
-        }
-        
-        PontoColetaResponseDTO dto = new PontoColetaResponseDTO();
-        dto.setId(pontoColeta.getId());
-        dto.setNome(pontoColeta.getNome());
-        dto.setEndereco(pontoColeta.getEndereco());
-        dto.setResponsavel(pontoColeta.getNomeResponsavel());
-        dto.setEmail(pontoColeta.getEmail());
-        dto.setTelefone(pontoColeta.getTelefone());
-        dto.setHorarioFuncionamento(pontoColeta.getHorarioFuncionamento());
-        dto.setColetado(false);
-        
-        if (pontoColeta.getTiposDeResiduo() != null) {
-            Set<String> tiposString = pontoColeta.getTiposDeResiduo().stream()
-                    .map(Enum::name)
-                    .collect(Collectors.toSet());
-            dto.setTiposResiduo(tiposString);
-        }
-        
-        if (pontoColeta.getBairro() != null) {
-            dto.setIdBairro(pontoColeta.getBairro().getId());
-        }
-        
-        return dto;
-    }
-
-    public static List<PontoColetaResponseDTO> fromEntities(List<PontoColeta> pontosColeta) {
-        if (pontosColeta == null) {
-            return Collections.emptyList();
-        }
-        return pontosColeta.stream()
-                .map(PontoColetaResponseDTO::fromEntity)
-                .collect(Collectors.toList());
-    }
-
-    public static PontoColetaResponseDTO fromParadaPontoColetaDTO(ParadaPontoColetaResponseDTO paradaPontoDTO) {
-        if (paradaPontoDTO == null) {
-            return null;
-        }
-        
-        PontoColetaResponseDTO dto = new PontoColetaResponseDTO();
-        dto.setId(paradaPontoDTO.getId());
-        dto.setNome(paradaPontoDTO.getPontoColetaNome());
-        dto.setColetado(paradaPontoDTO.isColetado());
-        
-        if (paradaPontoDTO.getTiposResiduo() != null) {
-            Set<String> tiposString = paradaPontoDTO.getTiposResiduo().stream()
-                    .map(Enum::name)
-                    .collect(Collectors.toSet());
-            dto.setTiposResiduo(tiposString);
-        }
-        
-        return dto;
-    }
 }

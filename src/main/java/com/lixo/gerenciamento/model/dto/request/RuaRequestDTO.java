@@ -1,9 +1,5 @@
 package com.lixo.gerenciamento.model.dto.request;
 
-import com.lixo.gerenciamento.model.dto.response.RuaResponseDTO;
-import com.lixo.gerenciamento.model.entity.Bairro;
-import com.lixo.gerenciamento.model.entity.Rua;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -153,47 +149,6 @@ public class RuaRequestDTO {
         return origemId + " ↔ " + destinoId + " (" + distancia + " km)";
     }
 
-    public static RuaRequestDTO of(Long origemId, Long destinoId, Double distancia) {
-        return new RuaRequestDTO(origemId, destinoId, distancia);
-    }
-
-    public static RuaRequestDTO criarDeBairros(Bairro origem, Bairro destino, Double distancia) {
-        if (origem == null || destino == null || distancia == null) {
-            return null;
-        }
-        return new RuaRequestDTO(origem.getId(), destino.getId(), distancia);
-    }
-
-    public static RuaRequestDTO fromEntity(Rua rua) {
-        if (rua == null) {
-            return null;
-        }
-        
-        RuaRequestDTO dto = new RuaRequestDTO();
-        dto.setDistancia(rua.getDistancia());
-        
-        if (rua.getOrigem() != null) {
-            dto.setOrigemId(rua.getOrigem().getId());
-        }
-        
-        if (rua.getDestino() != null) {
-            dto.setDestinoId(rua.getDestino().getId());
-        }
-        
-        return dto;
-    }
-
-    public static RuaRequestDTO fromResponseDTO(RuaResponseDTO responseDTO) {
-        if (responseDTO == null) {
-            return null;
-        }
-        
-        return new RuaRequestDTO(
-            responseDTO.getOrigemId(),
-            responseDTO.getDestinoId(),
-            responseDTO.getDistancia()
-        );
-    }
 
     public static RuaRequestDTOBuilder builder() {
         return new RuaRequestDTOBuilder();

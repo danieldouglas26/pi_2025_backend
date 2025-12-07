@@ -2,11 +2,8 @@ package com.lixo.gerenciamento.model.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.lixo.gerenciamento.model.entity.Caminhao;
 import com.lixo.gerenciamento.model.enums.TipoResiduo;
 
 public class CaminhaoResponseDTO {
@@ -252,29 +249,5 @@ public class CaminhaoResponseDTO {
             return new CaminhaoResponseDTO(id, placa, nomeMotorista, capacidade, 
                                           tipoResiduos, dataCriacao, dataAtualizacao);
         }
-    }
-
-    public static CaminhaoResponseDTO fromEntity(Caminhao caminhao) {
-        if (caminhao == null) {
-            return null;
-        }
-        return new CaminhaoResponseDTO(
-            caminhao.getId(),
-            caminhao.getPlaca(),
-            caminhao.getNomeMotorista(),
-            caminhao.getCapacidade(),
-            caminhao.getTipoResiduos(),
-            null,
-            null 
-        );
-    }
-
-    public static List<CaminhaoResponseDTO> fromEntities(List<Caminhao> caminhoes) {
-        if (caminhoes == null) {
-            return Collections.emptyList();
-        }
-        return caminhoes.stream()
-                .map(CaminhaoResponseDTO::fromEntity)
-                .collect(Collectors.toList());
     }
 }
