@@ -1,209 +1,278 @@
 package com.lixo.gerenciamento.model.entity;
 
-
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import com.lixo.gerenciamento.model.enums.TipoResiduo;
+import com.lixo.gerenciamento.model.interfaces.Builder;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 @Entity
-@Table(name = "rotas")
+@Table(name = "rota")
 public class Rota {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
-    @Column(nullable = false)
-    private String nome;
-    
-    @ManyToOne
-    @JoinColumn(name = "caminhao_id", nullable = false)
-    private Caminhao caminhao;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "rota_pontos_coleta",
-        joinColumns = @JoinColumn(name = "rota_id"),
-        inverseJoinColumns = @JoinColumn(name = "ponto_coleta_id")
-    )
-    private List<PontoColeta> pontosColeta = new ArrayList<>();
-    
-    @Column(name = "distancia_total")
-    private Double distanciaTotal;
-    
-    @Column(name = "tempo_estimado_minutos")
-    private Integer tempoEstimadoMinutos;
-    
-    @Column(name = "data_criacao")
-    private LocalDateTime dataCriacao;
-    
-    @Column(name = "sequencia_otimizada", columnDefinition = "TEXT")
-    private String sequenciaOtimizada;
-    
 
-    @Transient
-    private List<Bairro> caminhoBairros = new ArrayList<>();
-    
-    @Transient
-    private Double distanciaPercorrida;
-    
-    @Transient
-    private String status; // AGENDADA, EM_ANDAMENTO, CONCLUIDA
-    
-    // Construtores
-    public Rota() {}
-    
-    public Rota(Long id, String nome, Caminhao caminhao, List<PontoColeta> pontosColeta,
-               Double distanciaTotal, Integer tempoEstimadoMinutos, LocalDateTime dataCriacao,
-               String sequenciaOtimizada) {
+    @Column(nullable = false, unique = true)
+    private String nome;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "caminhaoid")
+    private Caminhao caminhao;
+
+    @OneToMany(mappedBy = "rota", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("ordem ASC")
+    private List<ParadaRota> paradas = new ArrayList<>();
+
+    @Column(nullable = false)
+    private Double distanciaTotalKm;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tiporesiduo")
+    private TipoResiduo tiposResiduos;
+
+    // Construtor padrão (no-args)
+    public Rota() {
+    }
+
+    // Construtor com todos os campos
+    public Rota(Long id, String nome, Caminhao caminhao, List<ParadaRota> paradas, 
+                Double distanciaTotalKm, TipoResiduo tiposResiduos) {
         this.id = id;
         this.nome = nome;
         this.caminhao = caminhao;
-        this.pontosColeta = pontosColeta != null ? pontosColeta : new ArrayList<>();
-        this.distanciaTotal = distanciaTotal;
-        this.tempoEstimadoMinutos = tempoEstimadoMinutos;
-        this.dataCriacao = dataCriacao;
-        this.sequenciaOtimizada = sequenciaOtimizada;
+        this.paradas = paradas != null ? paradas : new ArrayList<>();
+        this.distanciaTotalKm = distanciaTotalKm;
+        this.tiposResiduos = tiposResiduos;
     }
-    
-    // Builder Pattern
-    public static RotaBuilder builder() {
-        return new RotaBuilder();
+
+    // Construtor privado para o Builder
+    private Rota(RotaBuilder builder) {
+        this.id = builder.id;
+        this.nome = builder.nome;
+        this.caminhao = builder.caminhao;
+        this.paradas = builder.paradas != null ? builder.paradas : new ArrayList<>();
+        this.distanciaTotalKm = builder.distanciaTotalKm;
+        this.tiposResiduos = builder.tiposResiduos;
     }
-    
-    public static class RotaBuilder {
-        private Long id;
-        private String nome;
-        private Caminhao caminhao;
-        private List<PontoColeta> pontosColeta;
-        private Double distanciaTotal;
-        private Integer tempoEstimadoMinutos;
-        private LocalDateTime dataCriacao;
-        private String sequenciaOtimizada;
-        private List<Bairro> caminhoBairros;
-        private Double distanciaPercorrida;
-        private String status;
-        
-        public RotaBuilder id(Long id) { this.id = id; return this; }
-        public RotaBuilder nome(String nome) { this.nome = nome; return this; }
-        public RotaBuilder caminhao(Caminhao caminhao) { this.caminhao = caminhao; return this; }
-        public RotaBuilder pontosColeta(List<PontoColeta> pontosColeta) { this.pontosColeta = pontosColeta; return this; }
-        public RotaBuilder distanciaTotal(Double distanciaTotal) { this.distanciaTotal = distanciaTotal; return this; }
-        public RotaBuilder tempoEstimadoMinutos(Integer tempoEstimadoMinutos) { this.tempoEstimadoMinutos = tempoEstimadoMinutos; return this; }
-        public RotaBuilder dataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; return this; }
-        public RotaBuilder sequenciaOtimizada(String sequenciaOtimizada) { this.sequenciaOtimizada = sequenciaOtimizada; return this; }
-        public RotaBuilder caminhoBairros(List<Bairro> caminhoBairros) { this.caminhoBairros = caminhoBairros; return this; }
-        public RotaBuilder distanciaPercorrida(Double distanciaPercorrida) { this.distanciaPercorrida = distanciaPercorrida; return this; }
-        public RotaBuilder status(String status) { this.status = status; return this; }
-        
-        public Rota build() {
-            Rota rota = new Rota(id, nome, caminhao, pontosColeta, distanciaTotal, 
-                               tempoEstimadoMinutos, dataCriacao, sequenciaOtimizada);
-            rota.setCaminhoBairros(caminhoBairros != null ? caminhoBairros : new ArrayList<>());
-            rota.setDistanciaPercorrida(distanciaPercorrida);
-            rota.setStatus(status);
-            return rota;
-        }
-    }
-    
-    @PrePersist
-    protected void onCreate() {
-        dataCriacao = LocalDateTime.now();
-    }
-    
+
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    
-    public Caminhao getCaminhao() { return caminhao; }
-    public void setCaminhao(Caminhao caminhao) { this.caminhao = caminhao; }
-    
-    public List<PontoColeta> getPontosColeta() { return pontosColeta; }
-    public void setPontosColeta(List<PontoColeta> pontosColeta) { this.pontosColeta = pontosColeta; }
-    
-    public Double getDistanciaTotal() { return distanciaTotal; }
-    public void setDistanciaTotal(Double distanciaTotal) { this.distanciaTotal = distanciaTotal; }
-    
-    public Integer getTempoEstimadoMinutos() { return tempoEstimadoMinutos; }
-    public void setTempoEstimadoMinutos(Integer tempoEstimadoMinutos) { this.tempoEstimadoMinutos = tempoEstimadoMinutos; }
-    
-    public LocalDateTime getDataCriacao() { return dataCriacao; }
-    public void setDataCriacao(LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
-    
-    public String getSequenciaOtimizada() { return sequenciaOtimizada; }
-    public void setSequenciaOtimizada(String sequenciaOtimizada) { this.sequenciaOtimizada = sequenciaOtimizada; }
-    
-    public List<Bairro> getCaminhoBairros() { return caminhoBairros; }
-    public void setCaminhoBairros(List<Bairro> caminhoBairros) { 
-        this.caminhoBairros = caminhoBairros != null ? caminhoBairros : new ArrayList<>(); 
+    public Long getId() {
+        return id;
     }
-    
-    public Double getDistanciaPercorrida() { return distanciaPercorrida; }
-    public void setDistanciaPercorrida(Double distanciaPercorrida) { this.distanciaPercorrida = distanciaPercorrida; }
-    
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-    
-    // Métodos auxiliares
-    public void adicionarPontoColeta(PontoColeta ponto) {
-        if (pontosColeta == null) {
-            pontosColeta = new ArrayList<>();
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public Caminhao getCaminhao() {
+        return caminhao;
+    }
+
+    public void setCaminhao(Caminhao caminhao) {
+        this.caminhao = caminhao;
+    }
+
+    public List<ParadaRota> getParadas() {
+        if (paradas == null) {
+            paradas = new ArrayList<>();
         }
-        pontosColeta.add(ponto);
+        return paradas;
     }
-    
-    public boolean contemPontoColeta(Long pontoId) {
-        return pontosColeta.stream()
-                .anyMatch(p -> p.getId().equals(pontoId));
+
+    public void setParadas(List<ParadaRota> paradas) {
+        this.paradas = paradas != null ? paradas : new ArrayList<>();
     }
-    
-    public int getQuantidadePontos() {
-        return pontosColeta != null ? pontosColeta.size() : 0;
+
+    public Double getDistanciaTotalKm() {
+        return distanciaTotalKm;
     }
-    
-    public Double getDistanciaMediaPorPonto() {
-        if (pontosColeta == null || pontosColeta.size() <= 1 || distanciaTotal == null) {
-            return 0.0;
+
+    public void setDistanciaTotalKm(Double distanciaTotalKm) {
+        this.distanciaTotalKm = distanciaTotalKm;
+    }
+
+    public TipoResiduo getTiposResiduos() {
+        return tiposResiduos;
+    }
+
+    public void setTiposResiduos(TipoResiduo tiposResiduos) {
+        this.tiposResiduos = tiposResiduos;
+    }
+
+    // Métodos utilitários para manipulação de paradas
+    public void addParada(ParadaRota parada) {
+        if (paradas == null) {
+            paradas = new ArrayList<>();
         }
-        return distanciaTotal / (pontosColeta.size() - 1);
+        parada.setRota(this);
+        paradas.add(parada);
     }
-    
+
+    public void removeParada(ParadaRota parada) {
+        if (paradas != null) {
+            paradas.remove(parada);
+            parada.setRota(null);
+        }
+    }
+
+    // Métodos equals e hashCode
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Rota)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        
         Rota rota = (Rota) o;
-        return Objects.equals(id, rota.id) && Objects.equals(nome, rota.nome);
+        
+        if (id != null ? !id.equals(rota.id) : rota.id != null) return false;
+        return nome != null ? nome.equals(rota.nome) : rota.nome == null;
     }
-    
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (nome != null ? nome.hashCode() : 0);
+        return result;
     }
-    
+
+    // Método toString
     @Override
     public String toString() {
         return "Rota{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", distanciaTotal=" + distanciaTotal +
-                ", pontos=" + getQuantidadePontos() +
+                ", caminhao=" + (caminhao != null ? caminhao.getId() : "null") +
+                ", paradas=" + (paradas != null ? paradas.size() : 0) +
+                ", distanciaTotalKm=" + distanciaTotalKm +
+                ", tiposResiduos=" + tiposResiduos +
                 '}';
+    }
+
+    // Método estático para criar Builder
+    public static RotaBuilder builder() {
+        return new RotaBuilder();
+    }
+    
+    
+   public static class RotaBuilder implements Builder<Rota> {
+        private Long id;
+        private String nome;
+        private Caminhao caminhao;
+        private List<ParadaRota> paradas;
+        private Double distanciaTotalKm;
+        private TipoResiduo tiposResiduos;
+        
+        public RotaBuilder() {
+            // Construtor padrão
+        }
+        
+        public RotaBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+        
+        public RotaBuilder nome(String nome) {
+            this.nome = nome;
+            return this;
+        }
+        
+        public RotaBuilder caminhao(Caminhao caminhao) {
+            this.caminhao = caminhao;
+            return this;
+        }
+        
+        public RotaBuilder paradas(List<ParadaRota> paradas) {
+            this.paradas = paradas;
+            return this;
+        }
+        
+        public RotaBuilder parada(ParadaRota parada) {
+            if (this.paradas == null) {
+                this.paradas = new ArrayList<>();
+            }
+            this.paradas.add(parada);
+            return this;
+        }
+        
+        public RotaBuilder distanciaTotalKm(Double distanciaTotalKm) {
+            this.distanciaTotalKm = distanciaTotalKm;
+            return this;
+        }
+        
+        public RotaBuilder tiposResiduos(TipoResiduo tiposResiduos) {
+            this.tiposResiduos = tiposResiduos;
+            return this;
+        }
+        
+        @Override
+        public Rota build() {
+            // Validações
+            if (nome == null || nome.trim().isEmpty()) {
+                throw new IllegalArgumentException("Nome da rota não pode ser nulo ou vazio");
+            }
+            if (distanciaTotalKm == null) {
+                throw new IllegalArgumentException("Distância total não pode ser nula");
+            }
+            if (distanciaTotalKm < 0) {
+                throw new IllegalArgumentException("Distância total não pode ser negativa");
+            }
+            
+            // Se houver caminhão e tipos de resíduos especificados, verificar compatibilidade
+            if (caminhao != null && tiposResiduos != null) {
+                verificarCompatibilidadeCaminhaoResiduo();
+            }
+            
+            // Garantir que as paradas tenham referência à rota
+            if (paradas != null) {
+                for (ParadaRota parada : paradas) {
+                    parada.setRota(new Rota(this)); // Referência temporária, será ajustada no construtor
+                }
+            }
+            
+            return new Rota(this);
+        }
+        
+        // Método auxiliar para verificar compatibilidade entre caminhão e tipo de resíduo
+        private void verificarCompatibilidadeCaminhaoResiduo() {
+            if (caminhao.getTipoResiduos() != null && !caminhao.getTipoResiduos().isEmpty()) {
+                boolean compativel = false;
+                for (TipoResiduo tipo : caminhao.getTipoResiduos()) {
+                    if (tipo == tiposResiduos) {
+                        compativel = true;
+                        break;
+                    }
+                }
+                if (!compativel) {
+                    throw new IllegalArgumentException(
+                        "Tipo de resíduo da rota (" + tiposResiduos + ") " +
+                        "não é compatível com os tipos aceitos pelo caminhão: " + 
+                        caminhao.getTipoResiduos()
+                    );
+                }
+            }
+        }
     }
 }

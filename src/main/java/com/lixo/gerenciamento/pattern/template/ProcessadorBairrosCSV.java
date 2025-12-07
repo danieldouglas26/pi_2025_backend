@@ -41,7 +41,6 @@ public class ProcessadorBairrosCSV extends ProcessadorCSVTemplate<Bairro> {
                     Bairro bairro = Bairro.builder()
                             .id(id)
                             .nome(nome)
-                            .temPontoColeta(temPontoColeta)
                             .build();
                     bairros.add(bairro);
                 }

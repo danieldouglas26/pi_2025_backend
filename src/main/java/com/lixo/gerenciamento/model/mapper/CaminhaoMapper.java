@@ -1,38 +1,30 @@
 package com.lixo.gerenciamento.model.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-import com.lixo.gerenciamento.model.dto.CaminhaoDTO;
+import com.lixo.gerenciamento.model.dto.request.CaminhaoRequestDTO;
+import com.lixo.gerenciamento.model.dto.response.CaminhaoResponseDTO;
 import com.lixo.gerenciamento.model.entity.Caminhao;
 
-@Component
-public class CaminhaoMapper {
-    
-    public CaminhaoDTO toDTO(Caminhao entity) {
-        if (entity == null) {
-            return null;
-        }
-        
-        return CaminhaoDTO.builder()
-                .id(entity.getId())
-                .placa(entity.getPlaca())
-                .motorista(entity.getMotorista())
-                .capacidadeMaxima(entity.getCapacidadeMaxima())
-                .tiposResiduos(entity.getTiposResiduos())
-                .build();
-    }
-    
-    public Caminhao toEntity(CaminhaoDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        
-        return Caminhao.builder()
-                .id(dto.getId())
-                .placa(dto.getPlaca())
-                .motorista(dto.getMotorista())
-                .capacidadeMaxima(dto.getCapacidadeMaxima())
-                .tiposResiduos(dto.getTiposResiduos())
-                .build();
-    }
-}
+@Mapper(
+	    componentModel = "spring",
+	    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+	    unmappedTargetPolicy = ReportingPolicy.IGNORE
+	)
+	public interface CaminhaoMapper {
+	    
+	    @Mapping(target = "id", ignore = true)
+	    Caminhao toEntity(CaminhaoRequestDTO dto);
+	    
+	    CaminhaoResponseDTO toResponseDTO(Caminhao entity);
+	    
+	    CaminhaoRequestDTO toRequestDTO(Caminhao entity);
+
+	@Mapping(target = "id", ignore = true)
+	    @Mapping(target = "chaveModular", ignore = true) 
+	    void updateFromDto(CaminhaoRequestDTO dto, @MappingTarget Caminhao entity);
+	}

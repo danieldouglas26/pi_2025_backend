@@ -1,120 +1,79 @@
 package com.lixo.gerenciamento.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.lixo.gerenciamento.model.dto.CaminhaoDTO;
+import com.lixo.gerenciamento.exception.BusinessException;
+import com.lixo.gerenciamento.exception.ResourceNotFoundException;
+import com.lixo.gerenciamento.model.dto.request.CaminhaoRequestDTO;
 import com.lixo.gerenciamento.model.entity.Caminhao;
 import com.lixo.gerenciamento.model.mapper.CaminhaoMapper;
 import com.lixo.gerenciamento.repository.CaminhaoRepository;
-import com.lixo.gerenciamento.validation.annotation.PlacaValida;
 
 @Service
 public class CaminhaoService {
-    
+
+    private CaminhaoRepository caminhaoRepositorio;
+    private CaminhaoMapper mapper;
+
+
     @Autowired
-    private CaminhaoRepository caminhaoRepository;
-    
-    @Autowired
-    private CaminhaoMapper caminhaoMapper;
-    
-    @Autowired
-    private ValidationService validationService;
-    
-    public List<CaminhaoDTO> findAll() {
-        return caminhaoRepository.findAll()
-                .stream()
-                .map(caminhaoMapper::toDTO)
-                .collect(Collectors.toList());
+    public CaminhaoService(CaminhaoMapper caminhaoMapper, CaminhaoRepository caminhaoRepository) {
+    	this.mapper = caminhaoMapper;
+    	this.caminhaoRepositorio = caminhaoRepository;
     }
     
-    public CaminhaoDTO findById(Long id) {
-        Caminhao caminhao = caminhaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Caminhão não encontrado com ID: " + id));
-        return caminhaoMapper.toDTO(caminhao);
+    public Page<Caminhao> getAllTrucks(Pageable pageable) {
+        return caminhaoRepositorio.findAll(pageable);
     }
-    
-    public CaminhaoDTO save(CaminhaoDTO caminhaoDTO) {
-        validarCaminhao(caminhaoDTO);
-        
-        Caminhao caminhao = caminhaoMapper.toEntity(caminhaoDTO);
-        Caminhao saved = caminhaoRepository.save(caminhao);
-        return caminhaoMapper.toDTO(saved);
+
+    public Caminhao getCaminhaoPorId(Long id) {
+        return caminhaoRepositorio.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Truck not found with ID: " + id));
     }
-    
-    public CaminhaoDTO update(Long id, CaminhaoDTO caminhaoDTO) {
-        if (!caminhaoRepository.existsById(id)) {
-            throw new RuntimeException("Caminhão não encontrado com ID: " + id);
+
+    @Transactional
+    public Caminhao criarCaminhao(CaminhaoRequestDTO requestDTO) {
+        if (caminhaoRepositorio.findByPlaca(requestDTO.getPlaca()).isPresent()) {
+            throw new BusinessException("Caminhão com placa: " + requestDTO.getPlaca()+ " já existe.");
         }
         
-        validarCaminhao(caminhaoDTO);
+        Caminhao novoCaminhao = mapper.toEntity(requestDTO);
         
-        // Verificar se a placa já existe em outro caminhão
-        if (caminhaoRepository.findByPlaca(caminhaoDTO.getPlaca())
-                .map(c -> !c.getId().equals(id))
-                .orElse(false)) {
-            throw new IllegalArgumentException("Já existe um caminhão com a placa: " + caminhaoDTO.getPlaca());
-        }
+        //Apenas para compor requisito de Teoria da computação.
+        novoCaminhao.setChaveModular(gerarIdModular(novoCaminhao.getPlaca(), LocalDateTime.now().getDayOfMonth()));
         
-        Caminhao caminhao = caminhaoMapper.toEntity(caminhaoDTO);
-        caminhao.setId(id); // Garantir que o ID seja o mesmo
-        Caminhao updated = caminhaoRepository.save(caminhao);
-        return caminhaoMapper.toDTO(updated);
+        return caminhaoRepositorio.save(novoCaminhao);
     }
-    
-    public void delete(Long id) {
-        if (caminhaoRepository.existsById(id)) {
-            caminhaoRepository.deleteById(id);
-        } else {
-            throw new RuntimeException("Caminhão não encontrado com ID: " + id);
+
+     @Transactional
+    public Caminhao atualizarCaminhao(Long id, CaminhaoRequestDTO requestDTO) {
+        Caminhao caminhaoExistente = getCaminhaoPorId(id); 
+
+        Optional<Caminhao> caminhaoComMesmaPlaca = caminhaoRepositorio.findByPlaca(requestDTO.getPlaca());
+        if (caminhaoComMesmaPlaca.isPresent() && !caminhaoComMesmaPlaca.get().getId().equals(id)) {
+            throw new BusinessException("Caminhão com placa: " + requestDTO.getPlaca() + " já existe.");
         }
+
+        mapper.updateFromDto(requestDTO, caminhaoExistente);
+
+    
+        return caminhaoRepositorio.save(caminhaoExistente);
+    }
+    private Long gerarIdModular(String infoUnica, int dia) {
+        int hash = infoUnica.hashCode(); 
+        return (long) ((hash + dia) % 997); 
     }
     
-    public Caminhao findEntityById(Long id) {
-        return caminhaoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Caminhão não encontrado com ID: " + id));
-    }
-    
-    public boolean validarPlaca(@PlacaValida String placa) {
-        return validationService.validarPlaca(placa);
-    }
-    
-    public List<CaminhaoDTO> findByTipoResiduo(String tipoResiduo) {
-        return caminhaoRepository.findByTipoResiduo(tipoResiduo)
-                .stream()
-                .map(caminhaoMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-    
-    public List<CaminhaoDTO> findByCapacidadeMinima(Double capacidadeMinima) {
-        return caminhaoRepository.findByCapacidadeMinima(capacidadeMinima)
-                .stream()
-                .map(caminhaoMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-    
-    private void validarCaminhao(CaminhaoDTO caminhaoDTO) {
-        if (!validationService.validarPlaca(caminhaoDTO.getPlaca())) {
-            throw new IllegalArgumentException("Placa inválida: " + caminhaoDTO.getPlaca());
-        }
-        
-        if (!validationService.validarNome(caminhaoDTO.getMotorista())) {
-            throw new IllegalArgumentException("Nome do motorista inválido");
-        }
-        
-        if (caminhaoDTO.getCapacidadeMaxima() == null || caminhaoDTO.getCapacidadeMaxima() <= 0) {
-            throw new IllegalArgumentException("Capacidade máxima deve ser maior que zero");
-        }
-        
-        if (caminhaoDTO.getTiposResiduos() != null) {
-            for (String tipoResiduo : caminhaoDTO.getTiposResiduos()) {
-                if (!validationService.validarTipoResiduo(tipoResiduo)) {
-                    throw new IllegalArgumentException("Tipo de resíduo inválido: " + tipoResiduo);
-                }
-            }
-        }
+    @Transactional
+    public void deletarCaminhao(Long id) {
+        Caminhao caminhao = getCaminhaoPorId(id);
+        caminhaoRepositorio.delete(caminhao);
     }
 }

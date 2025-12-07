@@ -1,9 +1,12 @@
 package com.lixo.gerenciamento.controller;
 
-import java.util.List;
+import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,65 +15,85 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import com.lixo.gerenciamento.model.dto.PontoColetaDTO;
+import com.lixo.gerenciamento.model.dto.request.PontoColetaRequestDTO;
+import com.lixo.gerenciamento.model.dto.response.PontoColetaResponseDTO;
+import com.lixo.gerenciamento.model.entity.PontoColeta;
+import com.lixo.gerenciamento.model.mapper.PontoColetaMapper;
 import com.lixo.gerenciamento.service.PontoColetaService;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/pontos-coleta")
 public class PontoColetaController {
+
+    private PontoColetaService pontoColetaService;
+    private PontoColetaMapper pontoColetaMapper;
+
     
     @Autowired
-    private PontoColetaService pontoColetaService;
-    
-    @GetMapping
-    public ResponseEntity<List<PontoColetaDTO>> getAllPontosColeta() {
-        List<PontoColetaDTO> pontos = pontoColetaService.findAll();
-        return ResponseEntity.ok(pontos);
+    public PontoColetaController(PontoColetaService pontoColetaService, PontoColetaMapper pontoColetaMapper) {
+		super();
+		this.pontoColetaService = pontoColetaService;
+		this.pontoColetaMapper = pontoColetaMapper;
+	}
+
+	@GetMapping
+    public ResponseEntity<Page<PontoColetaResponseDTO>> listarTodos(Pageable pageable) {
+        Page<PontoColeta> pontos = pontoColetaService.getAllCollectionPoints(pageable);
+        return ResponseEntity.ok(pontos.map(pontoColetaMapper::toResponseDTO));
     }
-    
+
     @GetMapping("/{id}")
-    public ResponseEntity<PontoColetaDTO> getPontoColetaById(@PathVariable Long id) {
-        PontoColetaDTO ponto = pontoColetaService.findById(id);
-        return ResponseEntity.ok(ponto);
+    public ResponseEntity<PontoColetaResponseDTO> buscarPorId(@PathVariable Long id) {
+        PontoColeta ponto = pontoColetaService.getCollectionPointById(id);
+        return ResponseEntity.ok(pontoColetaMapper.toResponseDTO(ponto));
     }
-    
+
     @PostMapping
-    public ResponseEntity<PontoColetaDTO> createPontoColeta(@Valid @RequestBody PontoColetaDTO pontoColetaDTO) {
-        PontoColetaDTO savedPonto = pontoColetaService.save(pontoColetaDTO);
-        return ResponseEntity.ok(savedPonto);
+    public ResponseEntity<PontoColetaResponseDTO> criar(
+            @RequestBody PontoColetaRequestDTO requestDTO,
+            UriComponentsBuilder uriBuilder) {
+        
+        PontoColeta novoPonto = pontoColetaService.createCollectionPoint(requestDTO);
+        URI uri = uriBuilder.path("/api/pontos-coleta/{id}").buildAndExpand(novoPonto.getId()).toUri();
+        
+        return ResponseEntity.created(uri)
+                .body(pontoColetaMapper.toResponseDTO(novoPonto));
     }
-    
+
     @PutMapping("/{id}")
-    public ResponseEntity<PontoColetaDTO> updatePontoColeta(@PathVariable Long id, 
-                                                           @Valid @RequestBody PontoColetaDTO pontoColetaDTO) {
-        PontoColetaDTO updatedPonto = pontoColetaService.update(id, pontoColetaDTO);
-        return ResponseEntity.ok(updatedPonto);
+    public ResponseEntity<PontoColetaResponseDTO> atualizar(
+            @PathVariable Long id,
+            @RequestBody PontoColetaRequestDTO requestDTO) {
+        
+        PontoColeta pontoAtualizado = pontoColetaService.updateCollectionPoint(id, requestDTO);
+        return ResponseEntity.ok(pontoColetaMapper.toResponseDTO(pontoAtualizado));
     }
-    
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePontoColeta(@PathVariable Long id) {
-        pontoColetaService.delete(id);
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Void> remover(@PathVariable Long id) {
+        pontoColetaService.deleteCollectionPoint(id);
         return ResponseEntity.noContent().build();
     }
-    
-    @GetMapping("/tipo-residuo/{tipoResiduo}")
-    public ResponseEntity<List<PontoColetaDTO>> getPontosPorTipoResiduo(@PathVariable String tipoResiduo) {
-        List<PontoColetaDTO> pontos = pontoColetaService.findByTipoResiduo(tipoResiduo);
-        return ResponseEntity.ok(pontos);
+
+
+    @GetMapping("/por-tipo/{tipoResiduo}")
+    public ResponseEntity<Page<PontoColetaResponseDTO>> listarPorTipoResiduo(
+            @PathVariable String tipoResiduo,
+            Pageable pageable) {
+        
+        Page<PontoColeta> pontos = pontoColetaService.findByTipoResiduo(tipoResiduo, pageable);
+        return ResponseEntity.ok(pontos.map(pontoColetaMapper::toResponseDTO));
     }
-    
-    @GetMapping("/bairro/{bairroId}")
-    public ResponseEntity<List<PontoColetaDTO>> getPontosPorBairro(@PathVariable Long bairroId) {
-        List<PontoColetaDTO> pontos = pontoColetaService.findByBairro(bairroId);
-        return ResponseEntity.ok(pontos);
-    }
-    
-    @GetMapping("/bairro-nome/{bairroNome}")
-    public ResponseEntity<List<PontoColetaDTO>> getPontosPorBairroNome(@PathVariable String bairroNome) {
-        List<PontoColetaDTO> pontos = pontoColetaService.findByBairroNome(bairroNome);
-        return ResponseEntity.ok(pontos);
+
+    @GetMapping("/por-bairro/{bairro}")
+    public ResponseEntity<Page<PontoColetaResponseDTO>> listarPorBairro(
+            @PathVariable String bairro,
+            Pageable pageable) {
+        
+        Page<PontoColeta> pontos = pontoColetaService.findByBairro(bairro, pageable);
+        return ResponseEntity.ok(pontos.map(pontoColetaMapper::toResponseDTO));
     }
 }

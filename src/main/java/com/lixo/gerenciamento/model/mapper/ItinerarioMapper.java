@@ -1,46 +1,36 @@
 package com.lixo.gerenciamento.model.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-import com.lixo.gerenciamento.model.dto.ItinerarioDTO;
+import com.lixo.gerenciamento.model.dto.request.ItinerarioRequestDTO;
+import com.lixo.gerenciamento.model.dto.response.ItinerarioResponseDTO;
 import com.lixo.gerenciamento.model.entity.Itinerario;
 
-@Component
-public class ItinerarioMapper {
-    
-    public ItinerarioDTO toDTO(Itinerario entity) {
-        if (entity == null) {
-            return null;
-        }
-        
-        return ItinerarioDTO.builder()
-                .id(entity.getId())
-                .rota(entity.getRota())
-                .data(entity.getData())
-                .horaInicio(entity.getHoraInicio())
-                .horaFim(entity.getHoraFim())
-                .status(entity.getStatus() != null ? entity.getStatus().name() : null)
-                .distanciaPercorrida(entity.getDistanciaPercorrida())
-                .tempoRealizado(entity.getTempoRealizado())
-                .observacoes(entity.getObservacoes())
-                .build();
-    }
-    
-    public Itinerario toEntity(ItinerarioDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        
-        return Itinerario.builder()
-                .id(dto.getId())
-                .rota(dto.getRota())
-                .data(dto.getData())
-                .horaInicio(dto.getHoraInicio())
-                .horaFim(dto.getHoraFim())
-                .status(dto.getStatus() != null ? Itinerario.StatusItinerario.valueOf(dto.getStatus()) : null)
-                .distanciaPercorrida(dto.getDistanciaPercorrida())
-                .tempoRealizado(dto.getTempoRealizado())
-                .observacoes(dto.getObservacoes())
-                .build();
-    }
+@Mapper(componentModel = "spring", uses = { ParadaRotaMapper.class,
+		PontoColetaMapper.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface ItinerarioMapper {
+
+	@Mapping(target = "id", ignore = true)
+	@Mapping(target = "rota", expression = "java(mapRota(dto.getRotaId()))")
+	@Mapping(target = "caminhao", expression = "java(mapCaminhao(dto.getCaminhaoId()))")
+	Itinerario toEntity(ItinerarioRequestDTO dto);
+
+	@Mapping(target = "rotaId", source = "rota.id")
+	@Mapping(target = "rotaNome", source = "rota.nome")
+	@Mapping(target = "caminhaoId", source = "caminhao.id")
+	@Mapping(target = "caminhaoPlaca", source = "caminhao.placa")
+	@Mapping(target = "motorista", source = "caminhao.nomeMotorista")
+	@Mapping(target = "distanciaTotal", source = "rota.distanciaTotalKm")
+	@Mapping(target = "tipoResiduo", source = "rota.tiposResiduos")
+	@Mapping(target = "paradas", source = "rota.paradas")
+	ItinerarioResponseDTO toResponseDTO(Itinerario itinerario);
+
+
+
+
+
+
 }
