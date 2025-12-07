@@ -22,36 +22,30 @@ public class ValidationService {
         
         String placaNormalizada = placa.toUpperCase().replaceAll("[^A-Z0-9]", "");
         
-        // Primeiro valida com regex
         if (!placaPattern.matcher(placaNormalizada).matches()) {
             return false;
         }
         
-        // Depois valida com autômato finito
         return validarPlacaAutomato(placaNormalizada);
     }
     
     private boolean validarPlacaAutomato(String placa) {
         if (placa.length() != 7) return false;
         
-        // Estado S0-S2: Verificar 3 letras
         for (int i = 0; i < 3; i++) {
             if (!Character.isLetter(placa.charAt(i))) return false;
         }
         
-        // Estado S3: Verificar 1 número
         if (!Character.isDigit(placa.charAt(3))) return false;
         
-        // Estado S4: Verificar 1 letra ou número
         char char4 = placa.charAt(4);
         if (!Character.isLetterOrDigit(char4)) return false;
         
-        // Estado S5 e S6: Verificar 2 números
         for (int i = 5; i < 7; i++) {
             if (!Character.isDigit(placa.charAt(i))) return false;
         }
         
-        return true; // Estado ACEITA
+        return true;
     }
     
     public boolean validarEmail(String email) {
@@ -98,7 +92,6 @@ public class ValidationService {
                 digitos[i] = Integer.parseInt(cpfNumerico.substring(i, i + 1));
             }
             
-            // Cálculo do primeiro dígito verificador
             int soma = 0;
             for (int i = 0; i < 9; i++) {
                 soma += digitos[i] * (10 - i);
@@ -108,7 +101,6 @@ public class ValidationService {
             
             if (digito1 != digitos[9]) return false;
             
-            // Cálculo do segundo dígito verificador
             soma = 0;
             for (int i = 0; i < 10; i++) {
                 soma += digitos[i] * (11 - i);

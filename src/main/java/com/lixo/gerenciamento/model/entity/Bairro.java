@@ -1,8 +1,8 @@
 package com.lixo.gerenciamento.model.entity;
 
-import java.util.Objects;
+import com.lixo.gerenciamento.model.interfaces.Builder;
+import com.lixo.gerenciamento.model.interfaces.Vertice;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,66 +10,99 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "bairros")
-public class Bairro {
+@Table(name = "bairro")
+public class Bairro implements Vertice {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @Column(unique = true, nullable = false)
     private String nome;
-    
-    @Column(name = "tem_ponto_coleta")
-    private Boolean temPontoColeta;
-    
-    public Bairro() {}
-    
-    public Bairro(Long id, String nome, Boolean temPontoColeta) {
+
+    public Bairro() {
+    }
+
+    public Bairro(Long id, String nome) {
         this.id = id;
         this.nome = nome;
-        this.temPontoColeta = temPontoColeta;
     }
-    
-    public static BairroBuilder builder() {
-        return new BairroBuilder();
+
+    private Bairro(BairroBuilder builder) {
+        this.id = builder.id;
+        this.nome = builder.nome;
     }
-    
-    public static class BairroBuilder {
-        private Long id;
-        private String nome;
-        private Boolean temPontoColeta;
-        
-        public BairroBuilder id(Long id) { this.id = id; return this; }
-        public BairroBuilder nome(String nome) { this.nome = nome; return this; }
-        public BairroBuilder temPontoColeta(Boolean temPontoColeta) { this.temPontoColeta = temPontoColeta; return this; }
-        
-        public Bairro build() {
-            return new Bairro(id, nome, temPontoColeta);
-        }
+
+    public Long getId() {
+        return id;
     }
-    
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public Boolean getTemPontoColeta() { return temPontoColeta; }
-    public void setTemPontoColeta(Boolean temPontoColeta) { this.temPontoColeta = temPontoColeta; }
-    
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    @Override
+    public Long verticeId() {
+        return this.id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Bairro)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        
         Bairro bairro = (Bairro) o;
-        return Objects.equals(id, bairro.id) && Objects.equals(nome, bairro.nome);
+        
+        if (id != null ? !id.equals(bairro.id) : bairro.id != null) return false;
+        return nome != null ? nome.equals(bairro.nome) : bairro.nome == null;
     }
-    
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome);
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (nome != null ? nome.hashCode() : 0);
+        return result;
     }
-    
+
     @Override
     public String toString() {
-        return "Bairro{id=" + id + ", nome='" + nome + "', temPontoColeta=" + temPontoColeta + '}';
+        return "Bairro{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
+    }
+
+    public static BairroBuilder builder() {
+        return new BairroBuilder();
+    }
+
+    public static class BairroBuilder implements Builder<Bairro> {
+        private Long id;
+        private String nome;
+
+        private BairroBuilder() {
+
+        }
+
+        public BairroBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public BairroBuilder nome(String nome) {
+            this.nome = nome;
+            return this;
+        }
+
+        @Override
+        public Bairro build() {
+            return new Bairro(this);
+        }
     }
 }
