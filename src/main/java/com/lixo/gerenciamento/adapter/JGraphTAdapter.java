@@ -1,19 +1,18 @@
-package com.lixo.gerenciamento.adapter;
+// Padrão Adapter 
 
+package com.lixo.gerenciamento.adapter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.springframework.stereotype.Component;
-
 import com.lixo.gerenciamento.model.interfaces.Aresta;
 import com.lixo.gerenciamento.model.interfaces.Grafo;
 import com.lixo.gerenciamento.model.interfaces.Vertice;

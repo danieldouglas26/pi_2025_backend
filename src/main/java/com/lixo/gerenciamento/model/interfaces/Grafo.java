@@ -1,3 +1,5 @@
+// Padrão Adapter
+
 package com.lixo.gerenciamento.model.interfaces;
 
 import java.util.List;

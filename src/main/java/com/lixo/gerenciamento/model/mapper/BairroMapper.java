@@ -1,9 +1,9 @@
-package com.lixo.gerenciamento.model.mapper;
+//Padrão singleton
 
+package com.lixo.gerenciamento.model.mapper;
 import com.lixo.gerenciamento.model.dto.request.BairroRequestDTO;
 import com.lixo.gerenciamento.model.dto.response.BairroResponseDTO;
 import com.lixo.gerenciamento.model.entity.Bairro;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
