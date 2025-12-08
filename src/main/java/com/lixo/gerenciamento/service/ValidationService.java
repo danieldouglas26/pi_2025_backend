@@ -8,69 +8,75 @@ import com.lixo.gerenciamento.validation.ValidationPatterns;
 
 @Service
 public class ValidationService {
-    
+
     private final Pattern placaPattern = Pattern.compile(ValidationPatterns.PLACA_VEICULO);
     private final Pattern cpfPattern = Pattern.compile(ValidationPatterns.CPF_FORMAT);
     private final Pattern emailPattern = Pattern.compile(ValidationPatterns.EMAIL);
     private final Pattern nomePattern = Pattern.compile(ValidationPatterns.NOME_PESSOA);
     private final Pattern telefonePattern = Pattern.compile(ValidationPatterns.TELEFONE);
-    
+
     public boolean validarPlaca(String placa) {
-        if (placa == null || placa.trim().isEmpty()) {
+        if (placa == null || placa.trim().isEmpty())
             return false;
-        }
-        
+        // Normaliza para remover caracteres especiais se necessário para o regex puro
         String placaNormalizada = placa.toUpperCase().replaceAll("[^A-Z0-9]", "");
-        
+
+        // Validação via REGEX
         if (!placaPattern.matcher(placaNormalizada).matches()) {
             return false;
         }
-        
+        // Validação extra via Autômato manual
         return validarPlacaAutomato(placaNormalizada);
     }
-    
+
     private boolean validarPlacaAutomato(String placa) {
-        if (placa.length() != 7) return false;
-        
+        if (placa.length() != 7)
+            return false;
+
         for (int i = 0; i < 3; i++) {
-            if (!Character.isLetter(placa.charAt(i))) return false;
+            if (!Character.isLetter(placa.charAt(i)))
+                return false;
         }
-        
-        if (!Character.isDigit(placa.charAt(3))) return false;
-        
+
+        if (!Character.isDigit(placa.charAt(3)))
+            return false;
+
         char char4 = placa.charAt(4);
-        if (!Character.isLetterOrDigit(char4)) return false;
-        
+        if (!Character.isLetterOrDigit(char4))
+            return false;
+
         for (int i = 5; i < 7; i++) {
-            if (!Character.isDigit(placa.charAt(i))) return false;
+            if (!Character.isDigit(placa.charAt(i)))
+                return false;
         }
-        
+
         return true;
     }
-    
+
     public boolean validarEmail(String email) {
         return email != null && emailPattern.matcher(email).matches();
     }
-    
+
     public boolean validarCPF(String cpf) {
         if (cpf == null || !cpfPattern.matcher(cpf).matches()) {
             return false;
         }
         return validarDigitosVerificadoresCPF(cpf);
     }
-    
+
     public boolean validarNome(String nome) {
         return nome != null && nomePattern.matcher(nome.trim()).matches();
     }
-    
+
     public boolean validarTelefone(String telefone) {
         return telefone != null && telefonePattern.matcher(telefone).matches();
     }
-    
+
     public boolean validarTipoResiduo(String tipoResiduo) {
-        if (tipoResiduo == null) return false;
-        
-        String[] tiposValidos = {"PLASTICO", "PAPEL", "METAL", "ORGANICO", "VIDRO"};
+        if (tipoResiduo == null)
+            return false;
+
+        String[] tiposValidos = { "PLASTICO", "PAPEL", "METAL", "ORGANICO", "VIDRO" };
         for (String tipoValido : tiposValidos) {
             if (tipoValido.equalsIgnoreCase(tipoResiduo.trim())) {
                 return true;
@@ -78,38 +84,39 @@ public class ValidationService {
         }
         return false;
     }
-    
+
     private boolean validarDigitosVerificadoresCPF(String cpf) {
         String cpfNumerico = cpf.replaceAll("[^0-9]", "");
-        
+
         if (cpfNumerico.length() != 11 || cpfNumerico.chars().distinct().count() == 1) {
             return false;
         }
-        
+
         try {
             int[] digitos = new int[11];
             for (int i = 0; i < 11; i++) {
                 digitos[i] = Integer.parseInt(cpfNumerico.substring(i, i + 1));
             }
-            
+
             int soma = 0;
             for (int i = 0; i < 9; i++) {
                 soma += digitos[i] * (10 - i);
             }
             int resto = soma % 11;
             int digito1 = resto < 2 ? 0 : 11 - resto;
-            
-            if (digito1 != digitos[9]) return false;
-            
+
+            if (digito1 != digitos[9])
+                return false;
+
             soma = 0;
             for (int i = 0; i < 10; i++) {
                 soma += digitos[i] * (11 - i);
             }
             resto = soma % 11;
             int digito2 = resto < 2 ? 0 : 11 - resto;
-            
+
             return digito2 == digitos[10];
-            
+
         } catch (NumberFormatException e) {
             return false;
         }
