@@ -1,3 +1,4 @@
+
 package com.lixo.gerenciamento.model.mapper;
 
 import org.mapstruct.Mapper;
@@ -44,8 +45,8 @@ protected Bairro mapBairro(Long bairroid) {
 if (bairroid == null) {
     return null;
 }
-return bairroRepository.findById(bairroid)
-        .orElseThrow(() -> new IllegalArgumentException("PontoColeta não encontrado com ID: " + bairroid));
+    
+    return bairroRepository.findById(bairroid).orElse(null); 
 }
 
 @Mapping(target = "origemId", source = "origem.id")

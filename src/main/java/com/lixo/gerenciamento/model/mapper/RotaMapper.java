@@ -55,24 +55,36 @@ public abstract class RotaMapper {
 	@Mapping(target = "pontosColeta", expression = "java(mapPontosColeta(rota))")
 	public abstract RotaResponseDTO toResponseDTO(Rota rota);
 
+    
 	protected String generateRouteName(RotaRequestDTO dto) {
 		Caminhao caminhao = getCaminhao(dto.getCaminhaoId());
 		Bairro origem = getBairro(dto.getOrigemId());
 		Bairro destino = getBairro(dto.getDestinoId());
 
-		return String.format("Rota %s - %s para %s", caminhao.getPlaca(), origem.getNome(), destino.getNome());
+        String placa = caminhao != null ? caminhao.getPlaca() : "Caminhão Desconhecido";
+        String nomeOrigem = origem != null ? origem.getNome() : "Origem Desconhecida";
+        String nomeDestino = destino != null ? destino.getNome() : "Destino Desconhecido";
+
+		return String.format("Rota %s - %s para %s", placa, nomeOrigem, nomeDestino);
 	}
 
 	protected Caminhao getCaminhao(Long caminhaoId) {
-		return caminhaoRepository.findById(caminhaoId)
-				.orElseThrow(() -> new IllegalArgumentException("Caminhão não encontrado"));
+		if (caminhaoId == null) {
+			return null;
+		}
+        
+		return caminhaoRepository.findById(caminhaoId).orElse(null);
 	}
 
 	protected Bairro getBairro(Long bairroId) {
-		return bairroRepository.findById(bairroId)
-				.orElseThrow(() -> new IllegalArgumentException("Bairro não encontrado"));
+		if (bairroId == null) {
+			return null;
+		}
+        
+		return bairroRepository.findById(bairroId).orElse(null);
 	}
 
+    
 	protected List<ParadaRotaResponseDTO> mapParadas(List<ParadaRota> paradas) {
 		if (paradas == null) {
 			return Collections.emptyList();
