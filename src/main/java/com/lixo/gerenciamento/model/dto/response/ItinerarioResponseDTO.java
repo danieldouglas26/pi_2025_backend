@@ -336,24 +336,6 @@ public class ItinerarioResponseDTO {
         }
 
         public ItinerarioResponseDTO build() {
-            if (rotaId == null) {
-                throw new IllegalArgumentException("ID da rota não pode ser nulo");
-            }
-            if (rotaNome == null || rotaNome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome da rota não pode ser nulo ou vazio");
-            }
-            if (caminhaoId == null) {
-                throw new IllegalArgumentException("ID do caminhão não pode ser nulo");
-            }
-            if (caminhaoPlaca == null || caminhaoPlaca.trim().isEmpty()) {
-                throw new IllegalArgumentException("Placa do caminhão não pode ser nula ou vazia");
-            }
-            if (distanciaTotal != null && distanciaTotal < 0) {
-                throw new IllegalArgumentException("Distância total não pode ser negativa");
-            }
-            if (data != null && data.isBefore(LocalDate.now())) {
-                throw new IllegalArgumentException("Data do itinerário não pode ser no passado");
-            }
             
             return new ItinerarioResponseDTO(id, rotaId, rotaNome, caminhaoId, caminhaoPlaca, 
                                            motorista, data, distanciaTotal, tipoResiduo, 

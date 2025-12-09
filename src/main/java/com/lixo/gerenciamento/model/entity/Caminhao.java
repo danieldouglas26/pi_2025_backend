@@ -203,16 +203,6 @@ public class Caminhao {
         }
 
         public Caminhao build() {
-            if (placa == null || placa.trim().isEmpty()) {
-                throw new IllegalArgumentException("Placa é obrigatória");
-            }
-            if (nomeMotorista == null || nomeMotorista.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do motorista é obrigatório");
-            }
-            if (capacidade == null || capacidade <= 0) {
-                throw new IllegalArgumentException("Capacidade deve ser maior que zero");
-            }
-            
             return new Caminhao(this);
         }
     }

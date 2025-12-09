@@ -232,16 +232,7 @@ public class CaminhaoResponseDTO {
         }
 
         public CaminhaoResponseDTO build() {
-            if (placa == null || placa.trim().isEmpty()) {
-                throw new IllegalArgumentException("Placa não pode ser nula ou vazia");
-            }
-            if (nomeMotorista == null || nomeMotorista.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do motorista não pode ser nulo ou vazio");
-            }
-            if (capacidade == null || capacidade <= 0) {
-                throw new IllegalArgumentException("Capacidade deve ser maior que zero");
-            }
-            
+
             if (dataCriacao == null && dataAtualizacao != null) {
                 dataCriacao = dataAtualizacao;
             }

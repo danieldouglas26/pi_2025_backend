@@ -360,22 +360,6 @@ public class RotaResponseDTO {
         }
 
         public RotaResponseDTO build() {
-            if (nome == null || nome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome da rota não pode ser nulo ou vazio");
-            }
-            if (distanciaTotalKm == null) {
-                throw new IllegalArgumentException("Distância total não pode ser nula");
-            }
-            if (distanciaTotalKm <= 0) {
-                throw new IllegalArgumentException("Distância total deve ser maior que zero");
-            }
-            if (tiposResiduos == null) {
-                throw new IllegalArgumentException("Tipo de resíduo não pode ser nulo");
-            }
-            
-            if (caminhaoId != null && (caminhaoPlaca == null || caminhaoPlaca.trim().isEmpty())) {
-                throw new IllegalArgumentException("Se caminhão está associado, a placa deve ser informada");
-            }
             
             return new RotaResponseDTO(id, nome, caminhaoId, caminhaoPlaca, distanciaTotalKm,
                                       tiposResiduos, paradas, pontosColeta);
