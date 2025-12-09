@@ -7,10 +7,14 @@ import org.mapstruct.ReportingPolicy;
 
 import com.lixo.gerenciamento.model.dto.request.ItinerarioRequestDTO;
 import com.lixo.gerenciamento.model.dto.response.ItinerarioResponseDTO;
+import com.lixo.gerenciamento.model.entity.Caminhao;
 import com.lixo.gerenciamento.model.entity.Itinerario;
+import com.lixo.gerenciamento.model.entity.Rota;
 
-@Mapper(componentModel = "spring", uses = { ParadaRotaMapper.class,
-		PontoColetaMapper.class }, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", 
+uses = { ParadaRotaMapper.class, PontoColetaMapper.class }, 
+nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, 
+unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ItinerarioMapper {
 
 	@Mapping(target = "id", ignore = true)
@@ -29,7 +33,15 @@ public interface ItinerarioMapper {
 	ItinerarioResponseDTO toResponseDTO(Itinerario itinerario);
 
 
+    default Rota mapRota(Long id) {
+        if (id == null) return null;
+        return Rota.builder().id(id).build();
+    }
 
+    default Caminhao mapCaminhao(Long id) {
+        if (id == null) return null;
+        return Caminhao.builder().id(id).build();
+    }
 
 
 

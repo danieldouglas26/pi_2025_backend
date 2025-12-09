@@ -45,16 +45,14 @@ public class ItinerarioService {
             throw new BusinessException("Caminhão já possui itinerário nesta data");
         }
 
-        Rota rota = rotaRepository.findById(requestDTO.getRotaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Rota não encontrada"));
-        Caminhao caminhao = caminhaoRepository.findById(requestDTO.getCaminhaoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Caminhão não encontrado"));
+        Rota rota = rotaRepository.findById(requestDTO.getRotaId()).get();
+        Caminhao caminhao = caminhaoRepository.findById(requestDTO.getCaminhaoId()).get();
 
         if (!caminhao.getTipoResiduos().contains(rota.getTiposResiduos())) {
             throw new BusinessException("O caminhão não está habilitado para o tipo de resíduo da rota");
         }
         
-        if (!caminhao.equals(rota.getCaminhao())) {
+        if (!caminhao.getId().equals(rota.getCaminhao().getId())) {
         	throw new BusinessException("O caminhão informado é diferente do caminhão da rota informada");
         }
 

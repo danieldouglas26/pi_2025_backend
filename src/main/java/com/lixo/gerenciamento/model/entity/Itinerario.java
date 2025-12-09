@@ -207,21 +207,8 @@ public class Itinerario {
         
         @Override
         public Itinerario build() {
-            if (rota == null) {
-                throw new IllegalArgumentException("Rota não pode ser nula");
-            }
-            if (caminhao == null) {
-                throw new IllegalArgumentException("Caminhão não pode ser nulo");
-            }
-            if (data == null) {
-                data = LocalDate.now();
-            }
-            
-            if (data.isBefore(LocalDate.now())) {
-                throw new IllegalArgumentException("Data do itinerário não pode ser no passado");
-            }
-            
-            
+
+               
             return new Itinerario(this);
         }
 

@@ -228,34 +228,10 @@ public class Rota {
         }
         
         @Override
-        public Rota build() {
-            // Validações
-            if (nome == null || nome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome da rota não pode ser nulo ou vazio");
-            }
-            if (distanciaTotalKm == null) {
-                throw new IllegalArgumentException("Distância total não pode ser nula");
-            }
-            if (distanciaTotalKm < 0) {
-                throw new IllegalArgumentException("Distância total não pode ser negativa");
-            }
-            
-            // Se houver caminhão e tipos de resíduos especificados, verificar compatibilidade
-            if (caminhao != null && tiposResiduos != null) {
-                verificarCompatibilidadeCaminhaoResiduo();
-            }
-            
-            // Garantir que as paradas tenham referência à rota
-            if (paradas != null) {
-                for (ParadaRota parada : paradas) {
-                    parada.setRota(new Rota(this)); // Referência temporária, será ajustada no construtor
-                }
-            }
-            
+        public Rota build() {          
             return new Rota(this);
         }
         
-        // Método auxiliar para verificar compatibilidade entre caminhão e tipo de resíduo
         private void verificarCompatibilidadeCaminhaoResiduo() {
             if (caminhao.getTipoResiduos() != null && !caminhao.getTipoResiduos().isEmpty()) {
                 boolean compativel = false;

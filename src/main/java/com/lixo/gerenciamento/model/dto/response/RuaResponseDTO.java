@@ -257,21 +257,6 @@ public class RuaResponseDTO {
         }
 
         public RuaResponseDTO build() {
-            if (origemId == null) {
-                throw new IllegalArgumentException("ID da origem não pode ser nulo");
-            }
-            if (destinoId == null) {
-                throw new IllegalArgumentException("ID do destino não pode ser nulo");
-            }
-            if (origemId.equals(destinoId)) {
-                throw new IllegalArgumentException("Origem e destino não podem ser o mesmo bairro");
-            }
-            if (distancia == null) {
-                throw new IllegalArgumentException("Distância não pode ser nula");
-            }
-            if (distancia < 0) {
-                throw new IllegalArgumentException("Distância não pode ser negativa");
-            }
             
             return new RuaResponseDTO(id, origemId, origemNome, destinoId, destinoNome, distancia);
         }

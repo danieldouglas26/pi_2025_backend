@@ -217,17 +217,7 @@ public class ParadaRotaResponseDTO {
             return this;
         }
 
-        public ParadaRotaResponseDTO build() {
-            if (ordem < 0) {
-                throw new IllegalArgumentException("Ordem não pode ser negativa");
-            }
-            if (bairroId == null) {
-                throw new IllegalArgumentException("ID do bairro não pode ser nulo");
-            }
-            if (bairroNome == null || bairroNome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do bairro não pode ser nulo ou vazio");
-            }
-            
+        public ParadaRotaResponseDTO build() {        
             return new ParadaRotaResponseDTO(ordem, bairroId, bairroNome, pontosColeta);
         }
     }

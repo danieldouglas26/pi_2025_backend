@@ -12,7 +12,7 @@ public class ProcessadorBairrosCSV extends ProcessadorCSVTemplate<Bairro> {
     
     @Override
     protected void validarCabecalho(String cabecalho) {
-        String[] colunasEsperadas = {"id", "nome", "tem_ponto_coleta"};
+        String[] colunasEsperadas = {"id", "nome"};
         String[] colunasRecebidas = cabecalho.split(",");
         
         if (colunasRecebidas.length < colunasEsperadas.length) {
@@ -25,7 +25,7 @@ public class ProcessadorBairrosCSV extends ProcessadorCSVTemplate<Bairro> {
     }
     
     @Override
-    protected List<Bairro> processarDados(List<String> linhas) {
+	protected List<Bairro> processarDados(List<String> linhas) {
         List<Bairro> bairros = new ArrayList<>();
         
         for (int i = 0; i < linhas.size(); i++) {
@@ -33,10 +33,9 @@ public class ProcessadorBairrosCSV extends ProcessadorCSVTemplate<Bairro> {
                 String linha = linhas.get(i);
                 String[] dados = linha.split(",");
                 
-                if (dados.length >= 3) {
+                if (dados.length >= 2) {
                     Long id = dados[0].trim().isEmpty() ? null : Long.parseLong(dados[0].trim());
                     String nome = dados[1].trim();
-                    Boolean temPontoColeta = Boolean.parseBoolean(dados[2].trim());
                     
                     Bairro bairro = Bairro.builder()
                             .id(id)

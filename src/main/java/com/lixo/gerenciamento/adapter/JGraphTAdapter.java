@@ -17,11 +17,14 @@ import com.lixo.gerenciamento.model.interfaces.Aresta;
 import com.lixo.gerenciamento.model.interfaces.Grafo;
 import com.lixo.gerenciamento.model.interfaces.Vertice;
 
+
+//Classe que adapta a regra de calculo da lib JGraphT. Usada no servico RotaService.
 @Component
 public class JGraphTAdapter implements Grafo {
 
 	
 	private final Graph<String, DefaultWeightedEdge> grafo;
+	
 	
 	public JGraphTAdapter() {
         this.grafo = new DefaultDirectedWeightedGraph<>(DefaultWeightedEdge.class);

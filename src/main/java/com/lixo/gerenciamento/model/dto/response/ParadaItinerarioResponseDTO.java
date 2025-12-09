@@ -257,25 +257,7 @@ public class ParadaItinerarioResponseDTO {
             return this;
         }
 
-        public ParadaItinerarioResponseDTO build() {
-            if (ordem < 0) {
-                throw new IllegalArgumentException("Ordem não pode ser negativa");
-            }
-            if (bairroId == null) {
-                throw new IllegalArgumentException("ID do bairro não pode ser nulo");
-            }
-            if (bairroNome == null || bairroNome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do bairro não pode ser nulo ou vazio");
-            }
-            
-            if (coletado && horaColeta == null) {
-                horaColeta = LocalDateTime.now();
-            }
-            
-            if (!coletado && horaColeta != null) {
-                throw new IllegalArgumentException("Parada não coletada não pode ter hora de coleta");
-            }
-            
+        public ParadaItinerarioResponseDTO build() {    
             return new ParadaItinerarioResponseDTO(ordem, bairroId, bairroNome, 
                                                   pontosColeta, coletado, horaColeta);
         }

@@ -357,20 +357,7 @@ public class PontoColetaResponseDTO {
         }
 
         public PontoColetaResponseDTO build() {
-            if (nome == null || nome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do ponto de coleta não pode ser nulo ou vazio");
-            }
-            if (endereco == null || endereco.trim().isEmpty()) {
-                throw new IllegalArgumentException("Endereço do ponto de coleta não pode ser nulo ou vazio");
-            }
-            if (idBairro == null) {
-                throw new IllegalArgumentException("ID do bairro não pode ser nulo");
-            }
-            
-            if (email != null && !email.trim().isEmpty() && !isValidEmail(email)) {
-                throw new IllegalArgumentException("Email do ponto de coleta é inválido");
-            }
-            
+         
             return new PontoColetaResponseDTO(id, nome, endereco, responsavel, email, telefone,
                                              tiposResiduo, coletado, horarioFuncionamento, idBairro);
         }

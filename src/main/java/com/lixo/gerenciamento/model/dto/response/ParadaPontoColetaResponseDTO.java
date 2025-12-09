@@ -230,14 +230,7 @@ public class ParadaPontoColetaResponseDTO {
             return this;
         }
 
-        public ParadaPontoColetaResponseDTO build() {
-            if (pontoColetaId == null) {
-                throw new IllegalArgumentException("ID do ponto de coleta não pode ser nulo");
-            }
-            if (pontoColetaNome == null || pontoColetaNome.trim().isEmpty()) {
-                throw new IllegalArgumentException("Nome do ponto de coleta não pode ser nulo ou vazio");
-            }
-            
+        public ParadaPontoColetaResponseDTO build() {    
             return new ParadaPontoColetaResponseDTO(id, pontoColetaId, pontoColetaNome, 
                                                   tiposResiduo, coletado);
         }
